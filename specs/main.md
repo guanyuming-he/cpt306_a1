@@ -1,6 +1,9 @@
 # Game
 Two levels of the same map, same kinds of enemies (different in numbers and behaviours). 
 
+Inherits
+1. `MonoBehaviour`
+
 ## Fields
 The game has
 1. A `Hero`.
@@ -81,8 +84,9 @@ Note: on the main menu the game object is not created yet. So there is not a sta
 ## Abstract class `LevelObject`
 Is the base class of any object that can be placed in a level.
 
-1. Has a size $(w, h) \in \mathbb{R}^2$ (May be provided by Unity)
-2. Has a position $(x, y) \in \mathbb{R}^2$ (May be provided by Unity)
+1. Has an *immutable* size $(w, h) \in \mathbb{R}^2$ (May be provided by Unity)
+2. Has an *immutable* position $(x, y) \in \mathbb{R}^2$ (May be provided by Unity)
+3. Has a static method `collide(o1: LevelObject, o2: LevelObject)` that returns true iff `o1` collides with `o2`.
 
 ## Abstract class `MovingObject`
 Is the base class of any level objects that can move.
@@ -130,9 +134,49 @@ not considering anything but its current position, speed, and the game boundary.
 - abstract method `onAttack(x, y)` does what the attack does at the location $(x,y)$
 For example, hit anything in a range over $(x,y)$, or fire a bullet from $(x,y)$.
 
+## Abstract class `HittableObject`
+Has an integer `health`.
+
+### Methods
+1. Has a method `onHit(dmg: int, src: LevelObject)`
+    - i. It reduces `health` by `dmg`
+    - ii. It calls `takeDamage(dmg: int, src: LevelObject)`
+2. Has an abstract method `takeDamage(dmg: int, src: LevelObject)`
+3. Has a final method `dead()` that returns `health <= 0`.
+
+# Important Helper classes
+## Timer
+1. has a `paused` boolean field.
+2. has a `fired` boolean field.
+3. has an immutable `loop` boolean field.
+4. has an immutable `fireTime` float field.
+5. has a `timeElapsed` float field
+6. has an immutable `onFire` field that references a function.
+
+## Init
+1. `paused` is passed in as an argument.
+2. `fired = false`
+3. `loop` is passed in as an argument.
+4. `fireTime` is passed in as an argument.
+5. `timeElapsed = 0.0f`.
+6. `onFire` is passed in as an argument.
+
+## Update
+- if `paused`, then do nothing
+- otherwise, if `fired`, then do nothing.
+- otherwise, `timeElapsed += dt`.
+    - If `timeElapsed >= fireTime`, then set `fired = true` and call `onFire`.
+    - If `loop = true` then call `resetTimer()`.
+
+## Methods
+- `hasFired()` returns `fired`
+- `resetTimer()` resets the timer so that `paused = false`, `fired = false`, `timeElapsed = 0.0f`.
+- `pauseTimer()` and `resumeTimer()` do what their names say.
+
 # Hero
-<!-- TODO: add a basic class for all objects that have health and can be hit 
-Then inherit Hero from it. -->
+Inherits from
+1. `MovingObject`
+2. `HittableObject`
 
 ## Fields
 1. A `MeleeAttack` attack component.
