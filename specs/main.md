@@ -105,29 +105,26 @@ Note: on the main menu the game object is not created yet. So there is not a sta
 ## Abstract class `LevelObject`
 Is the base class of any object that can be placed in a level.
 
-1. Has an *immutable* size $(w, h) \in \mathbb{R}^2$ (May be provided by Unity)
-2. Has an *immutable* position $(x, y) \in \mathbb{R}^2$ (May be provided by Unity)
-3. Has a static method `collide(o1: LevelObject, o2: LevelObject)` that returns true iff `o1` collides with `o2`.
+### Fields
+- A protected `rigidBody: Rigidbody2D` that stores the `Rigidbody2D` component assigned to the level object. Every level object in the game must have a `Rigidbody2D`, so this field cannot be null.
+
+### Start
+- virtual so that the base's is called before all.
+- `rigidBody = gameObject.GetComponent<Rigidbody2D>();`
+- asserts that `rigidBody != null`.
 
 ## Abstract class `MovingObject`
 Is the base class of any level objects that can move.
 
 1. Inherits from `LevelObject`
-2. Has a unit direction vector $(d_x, d_y) \in \mathbb{R}^2$ (May be provided by Unity).
-3. Has a speed scalar $s$ (May be provided by Unity).
+2. Has a unit direction vector $(d_x, d_y) \in \mathbb{R}^2$
+3. Has a speed scalar $s$.
+
+### Init
+`speed := 0`, and `direction` can be any unit vector.
 
 ### Update
-Is abstract. Bullets may just go, but Enemies and Heroes cannot go through `Obstacle`s.
-
-### Other Methods
-Has a non-virtual method `nextFramePos()` that returns the position it would be in the next frame if
-not considering anything but its current position, speed, and the game boundary.
-- $(x',y') = (x,y) + \Delta t \cdot s \cdot (d_x,d_y)$ 
-- But rounded inside the game boundary, considering its size as well. That is,
-    $$
-    0+\frac{w}{2} \le x' \le 23-\frac{w}{2}\quad \wedge \quad
-    0+\frac{h}{2} \le y' \le 23-\frac{h}{2}
-    $$
+Sets the velocity of the `Rigidbody2D` to $s(d_x, d_y)$.
 
 ## Abstract class `Attack`
 ### Fields
