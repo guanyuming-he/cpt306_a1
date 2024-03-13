@@ -6,42 +6,19 @@ Inherits
 
 ## Fields
 The game has
-1. A `Hero`.
-2. A list of `Enemy`s.
-3. A list of `Obstacle`s.
-4. An `EnemySpawner` to spawn new enemies.
-5. A `StateManager` to manage the game's state.
-6. A `UIManager` to manage the UI drawn on the screen.
+- A `map: Map`, where a `Map` has
+    - A `Hero`, can be null if not created yet.
+    - A list of `Enemy`s, can be empty if not created yet.
+    - A list of `Obstacle`s, can be empty if not created yet.
+- An `enemySpawner: EnemySpawner` to spawn new enemies.
+- A `stateMgr: StateManager` to manage the game states.
+- A `uiMgr: UIManager` to manage the UI drawn on the screen.
 
-## Initialisation
-The game has an `init()` method that inits the persistent objects:
-1. The `StateManager` is created.
-2. The `UIManager` is created.
+## Start
+- The `StateManager` is created.
+- The `UIManager` is created.
+    - The main UI is brought to the screen.
 
-`init()` is called the first time the game object is created. 
-
-The game has a `reset()` method that resets the level-dependent objects:
-1. Takes parameters of 
-    - i. a configured `ObstacleSpawner` to spawn obstacles. All parameters of spawning obstacles, except the map, are given to it in its configuration.
-    - ii a configured `HeroSpawner` to spawn the hero. All parameters of spawning the hero, except the map with the spawned obstacles,  are given to it in its configuration.
-    - iii. a configured `EnemySpawner` to spawn enemies. All parameters of spawning enemies, except the map with the spawned obstacles and hero, are given to it in its configuration. 
-2. First, it destroys all the objects on the map:
-    - All except the `UIManager` and the `StateManager` are destroyed, if they are not `null`.
-3. Now the level is empty. It recreates the objects with the spawners.
-    - i. It passes the empty map to the `ObstacleSpawner`, takes the obstacles spawned by it,
-    and puts them in the map (the last step may be unnecessary as taking the obstacles may automatically mean having them in the map).
-    - ii. It takes the `EnemySpawner`.
-    - iii. It passes the map with the obstacles to the `EnemySpawner` and takes the enemies spawned by it.
-    - iv. It passes the map with the obstacles and the enemies to the `HeroSpawner` and takes the hero spawned by it.
-4. It binds the new `Hero` to the `UIManager` so the UI can display the hero's status.
-
-The game has a `start()` method that is called when the user starts/restarts the game.
-1. It reads the settings of `Level 1` from somewhere.
-2. It passes the settings to `reset()` to create the level-dependent objects.
-3. It resets the `StateManager` by calling the manager's `reset()`.
-    - Note: This will resets the score, the time, and all information about the previous game session. Do save them just after the game ends.
-4. It starts the game by calling the `StateManager`'s `start()`.
-    
 ## Update
 Inside the `Update()` method of the game object,
 1. If it sees that the `StateManager`'s state is `RUNNING`, 
@@ -53,32 +30,76 @@ Inside the `Update()` method of the game object,
     - It pauses all the use the `UIManager` to bring up victory UI.
 4. If it sees that the state is `NEXT_LEVEL`, then
     - It pauses all the use the `UIManager` to bring up the next level UI.
-5. If it sees that the state is `PAUSED`, then it calls the `UIManager` to present
+5. If it sees that the state is `disabled`, then it calls the `UIManager` to present
 the level starting UI (waiting for I'm ready button to be pressed).
 
+## Methods
+The game has a `resetLevel()` method that destroys and recreates all the level-dependent objects:
+1. Takes parameters of 
+    - i. a configured `ObstacleSpawner` to spawn obstacles. All parameters of spawning obstacles, except the map, are given to it in its configuration.
+    - ii a configured `HeroSpawner` to spawn the hero. All parameters of spawning the hero, except the map with the spawned obstacles,  are given to it in its configuration.
+    - iii. a configured `EnemySpawner` to spawn enemies. All parameters of spawning enemies, except the map with the spawned obstacles and hero, are given to it in its configuration. 
+2. First, it destroys all the level objects (i.e. All except the `UIManager` and `StateManager`):
+    - if they are not `null`.
+3. Now the level is empty. It recreates the objects with the spawners.
+    - i. It passes the empty map to the `ObstacleSpawner`, takes the obstacles spawned by it,
+    and puts them in the map (the last step may be unnecessary as taking the obstacles may automatically mean having them in the map).
+    - ii. It takes the `EnemySpawner`.
+    - iii. It passes the map with the obstacles to the `EnemySpawner` and takes the enemies spawned by it.
+    - iv. It passes the map with the obstacles and the enemies to the `HeroSpawner` and takes the hero spawned by it.
+4. It binds the new `Hero` to the `UIManager` so the UI can display the hero's status.
+
+The game has a `startGame()` method that is called when the user starts/restarts the game from the main UI.
+- It reads the settings of `Level 1` from somewhere.
+    - uses them to create the `Spawner`s
+    - and passes all those to `resetLevel()` to create the level-dependent objects.
+    - calls `stateMgr.startGame()`
 
 # State Manager
-Fields:
-1. an enum Level that describes which level is being played.
-    - LEVEL_1
-    - LEVEL_2
+## Fields:
+1. an integer Level that describes which level is being played.
 2. an integer `score`
+3. A `levelTimer: Timer` that manages the level's time.
 
-States:
-1. `PAUSED`
-When the user paused the game. He can resume on the UI.
-2. `RUNNING`
+## States:
+- `MAIN_UI`
+When the user is at the main UI.
+- `RUNNING`
 When the user is playing in a level.
-3. `GAME_OVER`
+- `PAUSED`
+When the user paused the game. He can resume on the UI.
+- `NEXT`
+When the user has succeeded on the previous (first) level. Now a "Next level" UI is displayed to him.
+He can the choose to go to the next level from there.
+- `GAME_OVER`
 When the user has failed. He can return to the main menu.
-4. `VICTORY`
+- `VICTORY`
 When the user has won. The ranking is displayed. He can return to the main menu.
-5. `NEXT_LEVEL`
-When the user has succeeded on the first level. He can the choose to go to the next level.
 
 Note: on the main menu the game object is not created yet. So there is not a state for this.
 
-![The state machine diagram](image.png)
+![The state machine diagram](state_diagram.svg)
+
+## Methods:
+- `startGame()` starts the game from `MU` to `R`. It inits `level := 1, score := 0`.
+- `goHome()` can be called from any state that is not `MU, R`. The method switchs the state back to `MU`.
+- `pause()` brings state from `P` to `R`
+- `resume()` brings state from `R` to `P`
+- `continueGame()` brings state from `N` to `R`. Also `++level`. It's called at `N` when the user chooses to continue from the UI.
+    - also resets the `levelTimer`.
+- `nextLevel()` brings state from `R` to `N`. It's called when the current level is complete and the user can go to the next level.
+    - `private` as only the manager can decide if a level has completed or not.
+- `win()` brings state from `R` to `V`, **and records the score field into a file**.
+    - `private` as only the manager can decide if the game has won or not.
+- `gameOver()` brings state from `R` to `GO`.
+- `onLevelTimerFired()` checks `level`.
+    - `level = 1 -> nextLevel()`
+    - `level = 2 -> win()`
+
+## Update
+- if `state != R`, then do nothing.
+- otherwise
+    - calls `levelTimer.update()` with `dt`.
 
 # Base Classes & Interfaces
 ## Abstract class `LevelObject`
@@ -146,32 +167,31 @@ Has an integer `health`.
 
 # Important Helper classes
 ## Timer
-1. has a `paused` boolean field.
+1. has a `disabled` boolean field.
 2. has a `fired` boolean field.
 3. has an immutable `loop` boolean field.
 4. has an immutable `fireTime` float field.
 5. has a `timeElapsed` float field
 6. has an immutable `onFire` field that references a function.
 
-## Init
-1. `paused` is passed in as an argument.
+## Ctor
+1. `disabled` is passed in as an argument.
 2. `fired = false`
 3. `loop` is passed in as an argument.
 4. `fireTime` is passed in as an argument.
 5. `timeElapsed = 0.0f`.
 6. `onFire` is passed in as an argument.
 
-## Update
-- if `paused`, then do nothing
-- otherwise, if `fired`, then do nothing.
-- otherwise, `timeElapsed += dt`.
-    - If `timeElapsed >= fireTime`, then set `fired = true` and call `onFire`.
-    - If `loop = true` then call `resetTimer()`.
-
 ## Methods
 - `hasFired()` returns `fired`
-- `resetTimer()` resets the timer so that `paused = false`, `fired = false`, `timeElapsed = 0.0f`.
-- `pauseTimer()` and `resumeTimer()` do what their names say.
+- `resetTimer()` resets the timer so that `fired = false`, `timeElapsed = 0.0f`.
+- `disableTimer()` and `enableTimer()` do what their names say.
+- `update(dt: float)` is not called by Unity. Must be called in an Unity Object's `Update()`.
+    - if `disabled`, then do nothing
+    - otherwise, if `fired`, then do nothing.
+    - otherwise, `timeElapsed += dt`.
+        - If `timeElapsed >= fireTime`, then set `fired = true` and call `onFire`.
+        - If `loop = true` then call `resetTimer()`.
 
 # Hero
 Inherits from

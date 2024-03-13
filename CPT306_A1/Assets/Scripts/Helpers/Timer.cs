@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Timer : MonoBehaviour
+public class Timer
 {
     // Called when the timer is fired.
     public delegate void onFire();
 
-    private bool paused;
+    private bool disabled;
     private bool fired;
     public readonly bool loop;
     public readonly float fireTime;
@@ -19,11 +19,11 @@ public class Timer : MonoBehaviour
     /// </summary>
     /// <param name="fireTime">how long does it take for it to fire</param>
     /// <param name="onFireCallback">what is called when the timer fires</param>
-    /// <param name="paused">if the timer is initially paused</param>
+    /// <param name="disabled">if the timer is initially disabled</param>
     /// <param name="loop">if the timer automatically resets itself to enter the next circle when it fires</param>
-    public Timer(float fireTime, onFire onFireCallback, bool paused = true, bool loop = false) 
+    public Timer(float fireTime, onFire onFireCallback, bool disabled = true, bool loop = false) 
     {
-        this.paused = paused;
+        this.disabled = disabled;
         this.fired = false;
         this.fireTime = fireTime;
         this.loop = loop;
@@ -31,37 +31,46 @@ public class Timer : MonoBehaviour
         this.onFireCallback = onFireCallback;
     }
 
-    /*********************************** Unity behaviours ***********************************/
+    /*********************************** Methods ***********************************/
 
-    // Update is called once per frame
-    void Update()
+    public bool hasFired() { return fired; }
+
+    /// <summary>
+    /// This is not automatically called.
+    /// I must explicitly call the method.
+    /// </summary>
+    /// <param name="dt"></param>
+    public void update(float dt)
     {
-        if (paused) return;
-        if (fired) return; 
+        if (disabled) return;
+        if (fired) return;
 
-        timeElapsed += Time.deltaTime;
-        if(timeElapsed > fireTime) 
+        timeElapsed += dt;
+        if (timeElapsed > fireTime)
         {
             fired = true;
             onFireCallback();
 
-            if(loop)
+            if (loop)
             {
                 resetTimer();
             }
         }
     }
 
-    /*********************************** Methods ***********************************/
-
-    public bool hasFired() { return fired; }
+    /// <summary>
+    /// Resets the state of the timer so that
+    /// fired = false; and it will fire after fireTime.
+    /// </summary>
+    /// <remarks>
+    /// this method does not enable a disabled timer.
+    /// </remarks>
     public void resetTimer()
     {
-        paused = false;
         fired = false;
         timeElapsed = 0.0f;
     }
 
-    public void pauseTimer() { paused = true; }
-    public void resumeTimer() {  paused = false; }
+    public void disableTimer() { disabled = true; }
+    public void enableTimer() { disabled = false; }
 }
