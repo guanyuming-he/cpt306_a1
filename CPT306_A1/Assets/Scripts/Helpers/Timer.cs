@@ -62,11 +62,12 @@ public class Timer
     /// Resets the state of the timer so that
     /// fired = false; and it will fire after fireTime.
     /// </summary>
-    /// <remarks>
-    /// this method does not enable a disabled timer.
-    /// </remarks>
-    public void resetTimer()
+    /// <param name="enable">
+    /// enable the timer as well if true.
+    /// </param>
+    public void resetTimer(bool enable = true)
     {
+        if (enable) enableTimer();
         fired = false;
         timeElapsed = 0.0f;
     }

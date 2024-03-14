@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingObject : LevelObject
+public abstract class MovingObject : LevelObject
 {
     /*********************************** Fields ***********************************/
     protected float speed;
@@ -20,5 +20,10 @@ public class MovingObject : LevelObject
     protected override void Start()
     {
         base.Start();
+    }
+
+    protected virtual void Update()
+    {
+        rigidBody.velocity = speed * direction;
     }
 }

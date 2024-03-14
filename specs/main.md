@@ -6,10 +6,7 @@ Inherits
 
 ## Fields
 The game has
-- A `map: Map`, where a `Map` has
-    - A `Hero`, can be null if not created yet.
-    - A list of `Enemy`s, can be empty if not created yet.
-    - A list of `Obstacle`s, can be empty if not created yet.
+- A `map: Map`
 - An `enemySpawner: EnemySpawner` to spawn new enemies.
 - A `stateMgr: StateManager` to manage the game states.
 - A `uiMgr: UIManager` to manage the UI drawn on the screen.
@@ -101,6 +98,20 @@ Note: on the main menu the game object is not created yet. So there is not a sta
 - otherwise
     - calls `levelTimer.update()` with `dt`.
 
+# Map
+A map stores all level objects in a level.
+
+## Fields
+- A public `Hero`, can be null if not created yet.
+- A public list of `Enemy`s, can be empty if not created yet.
+- A public list of `Obstacle`s, can be empty if not created yet.
+
+## Methods
+- `clear()` destroys all objects in the map (all that are not null).
+- `addHero(hero: Hero)` sets `this.hero` to `hero` iff `this.hero != null`.
+- `addEnemy(enemy: Enemy)` adds an enemy to the `Enemy` list.
+- `addObstacle(obs: Obstacle)` adds an obstacle to the list.
+
 # Base Classes & Interfaces
 ## Abstract class `LevelObject`
 Is the base class of any object that can be placed in a level.
@@ -112,6 +123,9 @@ Is the base class of any object that can be placed in a level.
 - virtual so that the base's is called before all.
 - `rigidBody = gameObject.GetComponent<Rigidbody2D>();`
 - asserts that `rigidBody != null`.
+
+### Methods
+- `destroy()` that destroys the `gameObject` containing it.
 
 ## Abstract class `MovingObject`
 Is the base class of any level objects that can move.
@@ -126,40 +140,58 @@ Is the base class of any level objects that can move.
 ### Update
 Sets the velocity of the `Rigidbody2D` to $s(d_x, d_y)$.
 
-## Abstract class `Attack`
-### Fields
-1. Has an immutable float `damage`.
-2. Has an immutable float `timeBetweenAttacks`, that decides the minimum number of seconds between two attacks.
-3. Has a float `cooldownVal`, that records the number of seconds elapsed after the last attack.
-4. Has a boolean `inCooldown`
+## Abstract class Enemy
+Inherits from
+1. `MovingObject`
+2. `HittableObject`
 
-### Init
-1. `damage` and `timeBetweenAttacks` are given through the constructor
-2. `inCooldown = false` and `cooldownVal = 0.0f`
+### Fields
+1. An `Attack` component
+
+### Methods
+- TODO: subclasses: `takeDamage()` if it's killed, then add scores to `StateManager`.
 
 ### Update
-1. If `inCooldown`, then `cooldownVal += dt`.
-    - If `cooldownVal >= timeBetweenAttacks`, then 
-        - `inCooldown = false`
-        - `cooldownVal = 0.0f`
+- `dead() -> destroy()`.
+
+## Abstract class Obstacle
+Inherits from `LevelObject`
+
+## Abstract class `Attack`
+### Fields
+1. Has an immutable int `damage`.
+2. Has a `cdTimer: Timer` .
+4. Has a boolean `inCooldown`.
+
+### Init
+1. `damage` is given through the constructor
+2. `cdTimer` is inited with cd value, `cdComplete()`, disabled=true, and loop=false.
+3. `inCooldown = false`.
+
+### Update
+- `cdTimer.update(dt)`.
 
 ### Other methods
-- method `attack(x, y)`.
+- method `tryAttack(x, y)`.
     - 1. if `inCooldown = true`, then returns.
     - 2. calls `onAttack(x, y)`, which does what the attack does.
-    - 3. `inCooldown = true`
+    - 3. `inCooldown := true`
+    - 4. `cdTimer.enable()`. `cdTimer.reset()`.
 
-- abstract method `onAttack(x, y)` does what the attack does at the location $(x,y)$
+- abstract method `attack(x, y)` does what the attack does at the location $(x,y)$
 For example, hit anything in a range over $(x,y)$, or fire a bullet from $(x,y)$.
 
-## Abstract class `HittableObject`
-Has an integer `health`.
+- `cdComplete()` called by the timer.
+    - inCooldown := false
+
+## Interface `IHittable`
+Has an integer property `health`.
 
 ### Methods
 1. Has a method `onHit(dmg: int, src: LevelObject)`
     - i. It reduces `health` by `dmg`
     - ii. It calls `takeDamage(dmg: int, src: LevelObject)`
-2. Has an abstract method `takeDamage(dmg: int, src: LevelObject)`
+2. Has a virtual method `takeDamage(dmg: int, src: LevelObject)` whose default impl does nothing.
 3. Has a final method `dead()` that returns `health <= 0`.
 
 # Important Helper classes
@@ -181,7 +213,9 @@ Has an integer `health`.
 
 ## Methods
 - `hasFired()` returns `fired`
-- `resetTimer()` resets the timer so that `fired = false`, `timeElapsed = 0.0f`.
+- `resetTimer(enable: bool)` resets the timer so that 
+    - `fired = false`, `timeElapsed = 0.0f`.
+    - `enable -> enableTimer()`
 - `disableTimer()` and `enableTimer()` do what their names say.
 - `update(dt: float)` is not called by Unity. Must be called in an Unity Object's `Update()`.
     - if `disabled`, then do nothing
@@ -190,11 +224,13 @@ Has an integer `health`.
         - If `timeElapsed >= fireTime`, then set `fired = true` and call `onFire`.
         - If `loop = true` then call `resetTimer()`.
 
-# Hero
+# Objects
+
+## Hero
 Inherits from
 1. `MovingObject`
 2. `HittableObject`
 
-## Fields
+### Fields
 1. A `MeleeAttack` attack component.
 2. A `RangedAttack` attack component.
