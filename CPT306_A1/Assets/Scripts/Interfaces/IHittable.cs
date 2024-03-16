@@ -19,7 +19,7 @@ public interface IHittable
     /// Called when src deals dmg damage to this.
     /// </summary>
     /// <param name="dmg"></param>
-    /// <param name="src">null iff the dmg is dealt by no LevelObject (e.g. env)</param>
+    /// <param name="src">can be null (e.g. the src has already died)</param>
     public void onHit(int dmg, LevelObject src)
     {
         health -= dmg;

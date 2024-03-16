@@ -232,12 +232,13 @@ Has an integer property `health`.
 
 ## Hero
 Inherits from
-1. `MovingObject`
-2. `HittableObject`
+- `MovingObject`
+- `HittableObject`
 
 ### Fields
-1. A `MeleeAttack` attack component.
-2. A `RangedAttack` attack component.
+- A Shooting crossbar (`gameObject`) that points at where the heros shoots at.
+- A `MeleeAttack` attack component.
+- A `HeroRangedAttack` attack component.
 
 # Attacks
 ## MeleeAttack

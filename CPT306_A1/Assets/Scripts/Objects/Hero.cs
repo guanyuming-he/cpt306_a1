@@ -5,32 +5,33 @@ using UnityEngine;
 
 public class Hero : MovingObject, IHittable
 {
+    /*********************************** Fields ***********************************/
     private int _health;
-
     int IHittable.health
     {
         get { return _health; }
         set { _health = value; }
     }
 
+    // Created in Awake where prefabs are available
+    private MeleeAttack meleeAttack;
+    private RangedAttack rangedAttack;
+
+    // Assigned in the editor, instantiated in Start()
+    // location updated to mouse in Update().
+    public GameObject shootingCrossbar;
+
+    /*********************************** Ctor ***********************************/
     /// <summary>
-    /// Spawns the hero with health at (x,y)
-    /// with its attack methods
+    /// Init the health.
     /// </summary>
-    /// <param name="health"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    public Hero
-    (
-        int health,
-        float x, float y,
-        RangedAttack ranged, MeleeAttack melee
-    )
+    public Hero()
     {
-        this._health = health;
-        setPos(x, y);
+        // specified in the specs
+        this._health = 30;
     }
 
+    /*********************************** MonoBehaviour ***********************************/
     // Start is called before the first frame update
     protected override void Start()
     {

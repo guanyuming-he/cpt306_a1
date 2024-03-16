@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 public class MeleeEnemy : Enemy
 {
-    public MeleeEnemy(int health, float x, float y, MeleeAttack attack) 
-        : base(health, x, y, attack)
+    public MeleeEnemy() 
+        : base(2) // health is specified in the specs
     {
     }
 }

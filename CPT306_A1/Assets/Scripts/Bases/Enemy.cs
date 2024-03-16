@@ -11,23 +11,32 @@ public class Enemy : MovingObject, IHittable
         set { _health = value; }
     }
 
+    // Must be assigned by the subclass, but not necessarily in the constructsor.
     protected Attack attack;
+    public Enemy()
+    {
+        // so it's not dead.
+        _health = 1;
+    }
 
-    /// <summary>
-    /// Spawns the enemy with health at (x,y)
-    /// with the attack method
-    /// </summary>
-    /// <param name="health"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    public Enemy(int health, float x, float y, Attack attack)
+    public Enemy(int health)
     {
         this._health = health;
-        setPos(x, y);
-        this.attack = attack;
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        // attack must have been assigned.
+        Debug.Assert(attack != null);
     }
 
     // Start is called before the first frame update
+    protected override void Start()
+    {
+        base.Start();
+    }
 
     // Update is called once per frame
     protected override void Update()

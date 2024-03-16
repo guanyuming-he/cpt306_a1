@@ -2,27 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObstacleSpawner : MonoBehaviour, ILevelObjSpawner<Obstacle>
+public class ObstacleSpawner :LevelObjSpawner<Obstacle>
 {
-    public Obstacle spawnAt(Vector2 pos)
+
+    public ObstacleSpawner(GameObject prefab) : base(prefab) { }
+    public override Obstacle spawnRandom(Map map)
     {
         throw new System.NotImplementedException();
     }
 
-    public Obstacle spawnRandom(Map map)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

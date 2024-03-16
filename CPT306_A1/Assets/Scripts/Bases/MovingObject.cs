@@ -6,24 +6,56 @@ using UnityEngine;
 public abstract class MovingObject : LevelObject
 {
     /*********************************** Fields ***********************************/
-    protected float speed;
-    protected Vector2 direction;
+    public float speed;
+    public Vector2 direction;
 
-    public MovingObject()
+    public MovingObject() : this(0.0f, Vector2.up) { }
+
+    public MovingObject(float speed, Vector2 direction)
     {
-        speed = 0.0f;
-        direction = Vector2.right;
+        this.speed = speed;
+        this.direction = direction;
     }
 
     /*********************************** MonoBehaviour ***********************************/
     // Start is called before the first frame update
-    protected override void Start()
+
+
+    protected override void Update()
     {
-        base.Start();
+        base.Update();
+
+        rigidBody.SetRotation(directionToRotationAngle(direction));
+        rigidBody.velocity = speed * direction;
     }
 
-    protected virtual void Update()
+    /*********************************** static helpers ***********************************/
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="src"></param>
+    /// <param name="dst"></param>
+    /// <returns>normalized dst - src, or up if dst == src </returns>
+    public static Vector2 calculateDirection(in Vector2 src, in Vector2 dst)
     {
-        rigidBody.velocity = speed * direction;
+        if(dst == src)
+        {
+            return Vector2.up;
+        }
+
+        return (dst - src).normalized;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dir">assumed to be normalized</param>
+    /// <returns>the rotation angle (in degrees) represented by the direction</returns>
+    public static float directionToRotationAngle(in Vector2 dir)
+    {
+        Debug.Assert(dir.x != 0.0f);
+
+        // magnitude = 1, so x = cos.
+        return Mathf.Acos(dir.x) * Mathf.Rad2Deg;
     }
 }

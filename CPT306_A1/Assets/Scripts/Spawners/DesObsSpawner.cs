@@ -5,14 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class DesObsSpawner : ILevelObjSpawner<DesObstacle>
+public class DesObsSpawner : LevelObjSpawner<DesObstacle>
 {
-    public DesObstacle spawnAt(Vector2 pos)
-    {
-        throw new NotImplementedException();
-    }
+    public DesObsSpawner(GameObject prefab) : base(prefab) { }
 
-    public DesObstacle spawnRandom(Map map)
+    public override DesObstacle spawnRandom(Map map)
     {
         throw new NotImplementedException();
     }

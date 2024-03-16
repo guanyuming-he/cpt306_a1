@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public sealed class MeleeAttack : Attack
 {
@@ -11,9 +11,10 @@ public sealed class MeleeAttack : Attack
 
     public MeleeAttack
     (
+        LevelObject src,
         int dmg, float cd,
         Vector2 attackRange
-    ) : base(dmg, cd)
+    ) : base(src, dmg, cd)
     {
         this.attackRange = attackRange;
     }
@@ -21,11 +22,9 @@ public sealed class MeleeAttack : Attack
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
     /// <remarks>Use Physics2D.BoxCast()</remarks>
     /// <exception cref="NotImplementedException"></exception>
-    protected override void attack(float x, float y)
+    protected override void attack(Vector2 pos)
     {
         throw new NotImplementedException();
     }

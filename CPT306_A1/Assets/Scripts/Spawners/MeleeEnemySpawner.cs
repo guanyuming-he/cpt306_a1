@@ -2,14 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeleeEnemySpawner : MonoBehaviour, ILevelObjSpawner<MeleeEnemy>
+public class MeleeEnemySpawner : LevelObjSpawner<MeleeEnemy>
 {
-    public MeleeEnemy spawnAt(Vector2 pos)
-    {
-        throw new System.NotImplementedException();
-    }
 
-    public MeleeEnemy spawnRandom(Map map)
+    public MeleeEnemySpawner(GameObject prefab) : base(prefab) { }
+    public override MeleeEnemy spawnRandom(Map map)
     {
         throw new System.NotImplementedException();
     }
