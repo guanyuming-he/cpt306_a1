@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -23,12 +24,12 @@ public class Game : MonoBehaviour
     {
         // destory all level objects
         map.clear();
-        
+
         // recreate level objects with the spawners
 
         // bind objects to the UI manager
 
-        throw new System.Exception("Unfinished");
+        throw new NotImplementedException();
     }
 
     /*********************************** MonoBehaviour ***********************************/
@@ -42,6 +43,6 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        throw new System.Exception("Unimplemented.");
+        throw new NotImplementedException();
     }
 }

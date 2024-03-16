@@ -81,7 +81,7 @@ public class StateManager : MonoBehaviour
         state = State.VICTORY;
 
         // save score to file.
-        throw new Exception("Unfinished.");
+        throw new NotImplementedException();
     }
 
     public void gameOver()

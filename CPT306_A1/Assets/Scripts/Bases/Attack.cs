@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class Attack : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
-    int damage;
+    protected readonly int damage;
     Timer cdTimer;
     bool inCooldown;
 

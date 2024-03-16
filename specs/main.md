@@ -234,3 +234,12 @@ Inherits from
 ### Fields
 1. A `MeleeAttack` attack component.
 2. A `RangedAttack` attack component.
+
+# Attacks
+## MeleeAttack
+Inherits from `Attack`.
+**ImplNote** Use `Physics2D.BoxCast`.
+
+### Fields
+Has an `attackRange`: $(w,h) \in \mathbb{R}^2$.
+

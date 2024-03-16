@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,7 +46,7 @@ public class Hero : MovingObject, IHittable
         {
             // stateMgr.gameOver();
             destroy();
-            throw new System.Exception("Unfinished.");
+            throw new NotImplementedException();
         }
     }
 }
