@@ -1,3 +1,7 @@
 *.aux
 *.log
 *.synctex.gz
+
+class_diagram/*
+!class_diagram/class_diagram.vpp
+!class_diagram/class_diagram.svg

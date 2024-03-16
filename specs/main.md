@@ -1,3 +1,6 @@
+# Class Diagram
+![The class diagram](class_diagram/class_diagram.svg)
+
 # Game
 Two levels of the same map, same kinds of enemies (different in numbers and behaviours). 
 
@@ -31,26 +34,27 @@ Inside the `Update()` method of the game object,
 the level starting UI (waiting for I'm ready button to be pressed).
 
 ## Methods
-The game has a `resetLevel()` method that destroys and recreates all the level-dependent objects:
-1. Takes parameters of 
-    - i. a configured `ObstacleSpawner` to spawn obstacles. All parameters of spawning obstacles, except the map, are given to it in its configuration.
-    - ii a configured `HeroSpawner` to spawn the hero. All parameters of spawning the hero, except the map with the spawned obstacles,  are given to it in its configuration.
-    - iii. a configured `EnemySpawner` to spawn enemies. All parameters of spawning enemies, except the map with the spawned obstacles and hero, are given to it in its configuration. 
-2. First, it destroys all the level objects (i.e. All except the `UIManager` and `StateManager`):
+A `resetLevel(int levelNum)` method that destroys and recreates all the level-dependent objects:
+- First, it destroys all the level objects (i.e. All except the `UIManager` and `StateManager`):
     - if they are not `null`.
-3. Now the level is empty. It recreates the objects with the spawners.
-    - i. It passes the empty map to the `ObstacleSpawner`, takes the obstacles spawned by it,
+- Now the level is empty. It recreates the objects with the spawners, according to levelNum.
+    - It passes the empty map to the `ObstacleSpawner` and `DesObsSpawner`, takes the obstacles spawned by it,
     and puts them in the map (the last step may be unnecessary as taking the obstacles may automatically mean having them in the map).
-    - ii. It takes the `EnemySpawner`.
-    - iii. It passes the map with the obstacles to the `EnemySpawner` and takes the enemies spawned by it.
-    - iv. It passes the map with the obstacles and the enemies to the `HeroSpawner` and takes the hero spawned by it.
-4. It binds the new `Hero` to the `UIManager` so the UI can display the hero's status.
+    - It passes the map with the obstacles and the enemies to the `HeroSpawner` and takes the hero spawned by it.
+    - It binds the new `Hero` to the `UIManager` so the UI can display the hero's status.
+    - It passes the map with the obstacles to the `EnemySpawner`s and takes the enemies spawned by it.
 
-The game has a `startGame()` method that is called when the user starts/restarts the game from the main UI.
+A `startGame()` method that is called when the user starts/restarts the game from the main UI.
 - It reads the settings of `Level 1` from somewhere.
-    - uses them to create the `Spawner`s
-    - and passes all those to `resetLevel()` to create the level-dependent objects.
+    - uses them to configure the `Spawner`s
+    - and calls `resetLevel()` to create the level-dependent objects.
     - calls `stateMgr.startGame()`
+
+A `continueGame()` method that is called when the user continues to the next level from the level passed UI.
+- It reads the settings of `Level 2` from somewhere.
+    - uses them to configure the `Spawner`s
+    - and calls `resetLevel()` to create the level-dependent objects.
+    - calls `stateMgr.continueGame()`
 
 # State Manager
 ## Fields:
@@ -243,3 +247,15 @@ Inherits from `Attack`.
 ### Fields
 Has an `attackRange`: $(w,h) \in \mathbb{R}^2$.
 
+## Ranged Attack
+Inherits from `Attack`.
+
+### Fields
+Has a `projectileSpawner: ProjectileSpawner`.
+
+### Ctor
+
+
+### Methods
+- Overrides `attack(x,y)`:
+    - a `Projectile` is spawned using the `projectileSpawner` at $(x,y)$.

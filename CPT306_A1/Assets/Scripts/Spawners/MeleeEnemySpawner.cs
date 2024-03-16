@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObstacleSpawner : MonoBehaviour, ILevelObjSpawner<Obstacle>
+public class MeleeEnemySpawner : MonoBehaviour, ILevelObjSpawner<MeleeEnemy>
 {
-    public Obstacle spawnAt(Vector2 pos)
+    public MeleeEnemy spawnAt(Vector2 pos)
     {
         throw new System.NotImplementedException();
     }
 
-    public Obstacle spawnRandom(Map map)
+    public MeleeEnemy spawnRandom(Map map)
     {
         throw new System.NotImplementedException();
     }

@@ -18,6 +18,13 @@ public sealed class MeleeAttack : Attack
         this.attackRange = attackRange;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <remarks>Use Physics2D.BoxCast()</remarks>
+    /// <exception cref="NotImplementedException"></exception>
     protected override void attack(float x, float y)
     {
         throw new NotImplementedException();
