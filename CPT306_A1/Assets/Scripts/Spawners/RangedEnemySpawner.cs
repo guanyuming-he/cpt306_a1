@@ -11,7 +11,7 @@ public class RangedEnemySpawner : LevelObjSpawner<RangedEnemy>
 
     public override RangedEnemy spawnRandom(Map map)
     {
-        throw new System.NotImplementedException();
+        return base.spawnRandom(map);
     }
 
 }

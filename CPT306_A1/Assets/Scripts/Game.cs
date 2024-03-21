@@ -17,9 +17,34 @@ public class Game : MonoBehaviour
     MeleeEnemySpawner meleeSpawner;
     RangedEnemySpawner rangedSpawner;
 
+    GameObject obsPrefab;
+    GameObject desObsPrefab;
+    GameObject heroPrefab;
+    GameObject meleeEnemyPrefab;
+    GameObject rangedEnemyPrefab;
+
     // Will always be available before all Start() and Update().
     // Game acts as the mediator. All objects talk to it.
     public static Game gameSingleton = null;
+
+    /*********************************** Level Settings ***********************************/
+    private static readonly int numLevels = 2;
+    private static readonly int[] numObsPerLevel = new int[]
+    {
+        15, 15
+    };
+    private static readonly int[] numDesObsPerLevel = new int[]
+    {
+        15, 15
+    };
+    private static readonly int[] numMeleePerLevel = new int[]
+    {
+        10, 15
+    };
+    private static readonly int[] numRangedPerLevel = new int[]
+    {
+        0, 5
+    };
 
     /*********************************** Ctor ***********************************/
     public Game()
@@ -46,29 +71,60 @@ public class Game : MonoBehaviour
     /// <param name="levelNum">number of the level</param>
     private void resetLevel(int levelNum)
     {
+        if (levelNum > numLevels || levelNum <= 0)
+        {
+            throw new ArgumentException("levelNum is incorrect");
+        }
+
         // destory all level objects
         map.clear();
 
         // recreate level objects with the spawners
         // according to the levelNum
+        createObjects(levelNum); 
 
         // bind objects to the UI manager
-
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Helper used inside resetLevel()
+    /// </summary>
+    /// <param name="levelNum"></param>
+    private void createObjects(int levelNum)
+    { 
+        // obstacles first
+        for(int i = 0; i < numObsPerLevel[levelNum-1]; ++i)
+        {
+            map.addObstacle(obsSpawner.spawnRandom(map));
+        }
+        for (int i = 0; i < numDesObsPerLevel[levelNum - 1]; ++i)
+        {
+            map.addObstacle(desObsSpawner.spawnRandom(map));
+        }
+        
+        // then hero
+        map.addHero(heroSpawner.spawnRandom(map));
+
+        // then enemies
+        for (int i = 0; i < numMeleePerLevel[levelNum - 1]; ++i)
+        {
+            map.addEnemy(meleeSpawner.spawnRandom(map));
+        }
+        for (int i = 0; i < numRangedPerLevel[levelNum - 1]; ++i)
+        {
+            map.addEnemy(rangedSpawner.spawnRandom(map));
+        }
     }
 
     /// <summary>
     /// called when the user starts/restarts the game from the main UI.
     /// - It reads the settings of `Level 1` from somewhere.
-    ///     - uses them to configure the `Spawner`s
     ///     - and calls `resetLevel(1)` to create the level-dependent objects.
     ///     - calls `stateMgr.startGame()`
     /// </summary>
     public void startGame()
     {
-        // read the level settings and configure the spawners
-        throw new NotImplementedException();
-
         // reset the level objects
         resetLevel(1);
 
@@ -79,15 +135,11 @@ public class Game : MonoBehaviour
     /// <summary>
     /// called when the user continues to the next level from the level passed UI. 
     /// - It reads the settings of `Level 2` from somewhere.
-    ///     - uses them to configure the `Spawner`s
     ///     - and calls `resetLevel(2)` to create the level-dependent objects.
     ///     - calls `stateMgr.continueGame()`
     /// </summary>
     public void continueGame()
     {
-        // read the level settings and configure the spawners
-        throw new NotImplementedException();
-
         // reset the level objects
         resetLevel(2);
 
@@ -101,7 +153,17 @@ public class Game : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        throw new NotImplementedException("Init the spawners.");
+        Debug.Assert(obsPrefab != null, "Assign the prefab in the editor");
+        Debug.Assert(desObsPrefab != null, "Assign the prefab in the editor");
+        Debug.Assert(heroPrefab != null, "Assign the prefab in the editor");
+        Debug.Assert(meleeEnemyPrefab != null, "Assign the prefab in the editor");
+        Debug.Assert(rangedEnemyPrefab != null, "Assign the prefab in the editor");
+
+        heroSpawner = new HeroSpawner(heroPrefab);
+        obsSpawner = new ObstacleSpawner(obsPrefab);
+        desObsSpawner = new DesObsSpawner(desObsPrefab);
+        meleeSpawner = new MeleeEnemySpawner(meleeEnemyPrefab);
+        rangedSpawner = new RangedEnemySpawner(rangedEnemyPrefab);
     }
 
     /// <summary>
@@ -111,5 +173,9 @@ public class Game : MonoBehaviour
     void Update()
     {
         stateMgr.update(Time.deltaTime);
+
+        // respond to ui keys
+
+        throw new NotImplementedException();
     }
 }

@@ -9,6 +9,10 @@ public abstract class Enemy : MovingObject
     // must be created in Awake() by AddComponent()
     protected EnemyHittableComp hittableComp;
 
+    public static readonly float width = .8f;
+    public static readonly float height = .8f;
+    public static readonly float diagonal = Mathf.Sqrt(width * width + height + height);
+
     public Enemy() : base() {}
 
     protected override void Awake()

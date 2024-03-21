@@ -13,12 +13,14 @@ public sealed class RangedEnemy : Enemy
     // created in Awake()
     private static ProjSpawner bulletSpawner = null;
 
-    public RangedEnemy() : base() { }
+    public RangedEnemy() : base() 
+    {
+        // NOTE: unspecified
+        speed = 2.5f;
+    }
 
     protected override void Awake()
     {
-        base.Awake();
-
         if(bulletSpawner == null)
         {
             // assigned in the editor
@@ -33,6 +35,8 @@ public sealed class RangedEnemy : Enemy
         hittableComp = gameObject.AddComponent<EnemyHittableComp>();
         // specified
         hittableComp.setHealth(1);
+
+        base.Awake();
     }
 
     protected override void Start()
@@ -42,10 +46,17 @@ public sealed class RangedEnemy : Enemy
 
     protected override void Update()
     {
-        base.Update();
-
         attack.update(Time.deltaTime);
 
-        throw new NotImplementedException("Move away from the hero");
+        var heroPos = Game.gameSingleton.map.hero.getPos();
+        var vectorDiff = heroPos - getPos();
+
+        // move away from the hero
+        this.direction = - vectorDiff.normalized;
+
+        // attack whenever it can
+        attack.tryAttack(getPos());
+
+        base.Update();
     }
 }

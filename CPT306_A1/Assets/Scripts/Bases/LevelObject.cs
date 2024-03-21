@@ -4,15 +4,11 @@ using UnityEngine;
 
 public abstract class LevelObject : MonoBehaviour
 {
-    /*********************************** Fields ***********************************/
-    protected Rigidbody2D rigidBody = null;
-
     /*********************************** MonoBehaviour ***********************************/
     // Declare them as virtual to ensure correct init/update order.
     protected virtual void Awake()
     {
-        rigidBody = gameObject.GetComponent<Rigidbody2D>();
-        Debug.Assert(rigidBody != null, "Did I forget to assign a rigidbody to this prefab?");
+        // Do nothing1
     }
 
     protected virtual void Start()

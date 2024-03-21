@@ -95,14 +95,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4520510768638383249}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: a73975ab485db96428c91e16437f5e95, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -112,7 +112,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!58 &1673702673653490012
 CircleCollider2D:
@@ -161,5 +161,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b1a81fa7b96b9640a9622c841e25077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hero: {fileID: 0}
+  speed: 2.5
+  direction: {x: 0, y: 1}
   bulletPrefab: {fileID: 8183057088417028377, guid: 6efb6397610b8ae4d9ac412b96efe777, type: 3}

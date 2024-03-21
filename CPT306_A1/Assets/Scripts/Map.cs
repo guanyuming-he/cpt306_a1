@@ -13,7 +13,13 @@ public class Map
     public List<Enemy> enemies;
     public List<Obstacle> obstacles;
 
-    /*********************************** Fields ***********************************/
+    /*********************************** Settings ***********************************/
+    public static readonly float mapMinX = 0.0f; 
+    public static readonly float mapMaxX = 23.0f; 
+    public static readonly float mapMinY = 0.0f; 
+    public static readonly float mapMaxY = 23.0f; 
+    
+    /*********************************** Ctor ***********************************/
     public Map()
     {
         hero = null;

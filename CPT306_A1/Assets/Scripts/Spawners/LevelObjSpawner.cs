@@ -26,10 +26,18 @@ public abstract class LevelObjSpawner<T> where T : LevelObject
 	/// <summary>
 	/// Spawns a LevelObject of type T at a random location (impl specified)
 	/// in the map.
+	/// 
+	/// Default impl does not care about what's on the map.
+	/// It just spawns the prefab randomly.
 	/// </summary>
 	/// <param name="map">the current map</param>
 	/// <returns>the spawned object. never null.</returns>
-	public abstract T spawnRandom(Map map);
+	public virtual T spawnRandom(Map map)
+	{
+        float x = UnityEngine.Random.Range(Map.mapMinX, Map.mapMaxX);
+		float y = UnityEngine.Random.Range(Map.mapMinY, Map.mapMaxY);
+		return spawnAt(new UnityEngine.Vector2(x, y));
+    }
 
     /// <summary>
     /// Spawns a LevelObject of type T at pos.
@@ -45,4 +53,22 @@ public abstract class LevelObjSpawner<T> where T : LevelObject
 		levelObj.setPos(pos);
 		return levelObj;
 	}
+
+    /// <param name="map"></param>
+    /// <param name="pos"></param>
+    /// <returns>true iff spawning a new object at pos
+    /// will not result in overlapping with existing OBSTACLES.</returns>
+    protected static bool locationClear(Map map, UnityEngine.Vector2 pos)
+    {
+        foreach (var obs in map.obstacles)
+        {
+            var posDiff = pos - obs.getPos();
+            if (posDiff.magnitude <= Obstacle.diagonal)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

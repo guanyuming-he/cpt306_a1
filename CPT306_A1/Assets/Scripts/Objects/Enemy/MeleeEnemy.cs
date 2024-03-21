@@ -9,6 +9,9 @@ public class MeleeEnemy : Enemy
     /*********************************** Ctor ***********************************/
     public MeleeEnemy() : base() 
     {
+        // NOTE: unspecified
+        speed = 2.5f;
+
         // create the attack
         attack = new EnemyMeleeAttack(this, 1, 1.0f, meleeAttackRange);
     }
@@ -31,11 +34,22 @@ public class MeleeEnemy : Enemy
 
     protected override void Update()
     {
-        base.Update();
-
         attack.update(Time.deltaTime);
 
-        throw new NotImplementedException("Chase the hero.");
+        var heroPos = Game.gameSingleton.map.hero.getPos();
+        var vectorDiff = heroPos - getPos();
+
+        // chase the hero
+        this.direction = vectorDiff.normalized;
+
+        // if it gets close enough to the hero, then attack.
+        // by close enough, I want the attack range can cover at least 1.0f more than the hero.
+        if(vectorDiff.magnitude <= meleeAttackRange.magnitude - 1.0f)
+        {
+            attack.tryAttack(getPos());
+        }
+
+        base.Update();
     }
 }
 

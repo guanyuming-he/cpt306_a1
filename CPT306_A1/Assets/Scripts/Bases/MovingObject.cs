@@ -25,8 +25,9 @@ public abstract class MovingObject : LevelObject
     {
         base.Update();
 
-        rigidBody.SetRotation(directionToRotationAngle(direction));
-        rigidBody.velocity = speed * direction;
+        transform.rotation = Quaternion.Euler(0, 0, directionToRotationAngle(direction));
+        var dir3d = new Vector3(direction.x, direction.y, 0.0f);
+        transform.position += Time.deltaTime * speed * dir3d;
     }
 
     /*********************************** static helpers ***********************************/

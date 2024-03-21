@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 
 public class Hero : MovingObject
@@ -23,9 +20,15 @@ public class Hero : MovingObject
     // created in Awake()
     private static ProjSpawner bulletSpawner = null;
 
+    public static readonly float width = .8f;
+    public static readonly float height = .8f;
+    public static readonly float diagonal = Mathf.Sqrt(width * width + height + height);
+
     /*********************************** Ctor ***********************************/
     public Hero() : base() 
     {
+        // specified.
+        speed = 2.5f;
         // can create the melee attack here.
         // but for consistency create it in Awake() instead.
     }
@@ -76,7 +79,32 @@ public class Hero : MovingObject
 
         // 1.
         {
-            
+            var mouseScreenPos = Input.mousePosition;
+            var mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            shootingCrossbar.transform.position.Set(mouseWorldPos.x, mouseWorldPos.y, 0.0f);
+        }
+
+        // 2.
+        {
+            // Respond to direction keys
+            var dirSum = Vector2.zero;
+            if (Input.GetKeyDown(KeyCode.W)) dirSum += Vector2.up;
+            if (Input.GetKeyDown(KeyCode.S)) dirSum += Vector2.down;
+            if (Input.GetKeyDown(KeyCode.A)) dirSum += Vector2.left;
+            if (Input.GetKeyDown(KeyCode.D)) dirSum += Vector2.right;
+            direction = dirSum.normalized;
+
+            // Respond to attack keys
+            // LMB
+            if(Input.GetMouseButtonDown(0))
+            {
+                rangedAttack.tryAttack(getPos());
+            }
+            // RMB
+            if(Input.GetMouseButtonDown(1))
+            {
+                meleeAttack.tryAttack(getPos());
+            }
         }
 
     }

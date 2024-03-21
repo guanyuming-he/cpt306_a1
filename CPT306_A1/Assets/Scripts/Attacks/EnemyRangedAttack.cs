@@ -11,17 +11,18 @@ public class EnemyRangedAttack : RangedAttack
 
     protected override Vector2 calcProjDirection()
     {
-        var owner = getSrc() as RangedEnemy;
+        var hero = Game.gameSingleton.map.hero;
 
         // Perhaps the hero just died.
-        if(owner.hero == null)
+        if(hero == null)
         {
             return Vector2.up;
         }
 
         // If the hero is alive, then calc the direction.
-        var dst = owner.hero.getPos();
-        var src = owner.getPos();
+        var dst = hero.getPos();
+        // src is the enemy.
+        var src = getSrc().getPos();
         return MovingObject.calculateDirection(src, dst);
     }
 }
