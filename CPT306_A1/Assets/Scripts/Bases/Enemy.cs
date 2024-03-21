@@ -2,27 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MovingObject, IHittable
+public abstract class Enemy : MovingObject
 {
-    private int _health;
-    int IHittable.health
-    {
-        get { return _health; }
-        set { _health = value; }
-    }
-
     // Must be assigned by the subclass, but not necessarily in the constructsor.
     protected Attack attack;
-    public Enemy()
-    {
-        // so it's not dead.
-        _health = 1;
-    }
+    // must be created in Awake() by AddComponent()
+    protected EnemyHittableComp hittableComp;
 
-    public Enemy(int health)
-    {
-        this._health = health;
-    }
+    public Enemy() : base() {}
 
     protected override void Awake()
     {

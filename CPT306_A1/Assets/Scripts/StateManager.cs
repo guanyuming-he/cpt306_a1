@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateManager : MonoBehaviour
+public class StateManager
 {
     /*********************************** States ***********************************/
     public enum State
@@ -108,13 +108,13 @@ public class StateManager : MonoBehaviour
 
     /*********************************** MonoBehaviour ***********************************/
 
-    public void Update()
+    public void update(float dt)
     {
         if(state != State.RUNNING)
         {
             return;
         }
 
-        levelTimer.update(Time.deltaTime);
+        levelTimer.update(dt);
     }
 }

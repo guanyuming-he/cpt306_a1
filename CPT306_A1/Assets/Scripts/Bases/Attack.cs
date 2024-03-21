@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public abstract class Attack : MonoBehaviour
+public abstract class Attack
 {
     /*********************************** Fields ***********************************/
     // An attack must be owned by a LO.
@@ -27,15 +27,16 @@ public abstract class Attack : MonoBehaviour
         inCooldown = false;
     }
 
-    /*********************************** MonoBehaviour ***********************************/
-
-    // Update is called once per frame
-    void Update()
-    {
-        cdTimer.update(Time.deltaTime);
-    }
-
     /*********************************** Methods ***********************************/
+
+    /// <summary>
+    /// must be called in containing LevelObject's Update()
+    /// </summary>
+    /// <param name="dt"></param>
+    public void update(float dt)
+    {
+        cdTimer.update(dt);
+    }
 
     public LevelObject getSrc() { return src; }
     public int getDmg() { return damage; }

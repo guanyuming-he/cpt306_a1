@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class EnemyRangedAttack : RangedAttack
 {
-    public EnemyRangedAttack(LevelObject src, int dmg, float cd, float projSpeed) : 
-        base(src, dmg, cd, projSpeed) {}
+    public EnemyRangedAttack(LevelObject src, int dmg, float cd, float projSpeed, ProjSpawner projSpawner) : 
+        base(src, dmg, cd, projSpeed, projSpawner) 
+    {
+        Debug.Assert(src is RangedEnemy);
+    }
 
     protected override Vector2 calcProjDirection()
     {
         var owner = getSrc() as RangedEnemy;
-        Debug.Assert(owner != null, "I have made a terrible mistake.");
 
         // Perhaps the hero just died.
         if(owner.hero == null)

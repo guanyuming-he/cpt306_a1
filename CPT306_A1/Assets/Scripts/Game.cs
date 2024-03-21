@@ -1,19 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Xml.Linq;
 using UnityEngine;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class Game : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
-    StateManager stateMgr = null;
-    UIManager uiMgr = null;
+    StateManager stateMgr;
+    UIManager uiMgr;
 
     // contains all the level objects
-    Map map;
+    public Map map;
 
     // spawners
     ObstacleSpawner obsSpawner;
@@ -22,10 +17,33 @@ public class Game : MonoBehaviour
     MeleeEnemySpawner meleeSpawner;
     RangedEnemySpawner rangedSpawner;
 
+    // Will always be available before all Start() and Update().
+    // Game acts as the mediator. All objects talk to it.
+    public static Game gameSingleton = null;
+
+    /*********************************** Ctor ***********************************/
+    public Game()
+    {
+        // can only have one instance per game
+        Debug.Assert(gameSingleton == null);
+        gameSingleton = this;
+
+        // Create the managers
+        stateMgr = new StateManager();
+        uiMgr = new UIManager();
+
+        // Create the map
+        map = new Map();
+
+        // Spawners are created instead in Awake(),
+        // because they need to refer to prefabs.
+    }
+
     /*********************************** Methods ***********************************/
     /// <summary>
     /// Destroys and recreates all level objects with the configured spawners
     /// </summary>
+    /// <param name="levelNum">number of the level</param>
     private void resetLevel(int levelNum)
     {
         // destory all level objects
@@ -83,9 +101,6 @@ public class Game : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        stateMgr = new StateManager();
-        uiMgr = new UIManager();
-
         throw new NotImplementedException("Init the spawners.");
     }
 
@@ -95,6 +110,6 @@ public class Game : MonoBehaviour
     /// <exception cref="NotImplementedException">unfinished</exception>
     void Update()
     {
-        throw new NotImplementedException();
+        stateMgr.update(Time.deltaTime);
     }
 }

@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 /// <summary>
 /// Responsibility is to record every object in a level
@@ -15,6 +12,14 @@ public class Map
     public Hero hero;
     public List<Enemy> enemies;
     public List<Obstacle> obstacles;
+
+    /*********************************** Fields ***********************************/
+    public Map()
+    {
+        hero = null;
+        enemies = new List<Enemy>();
+        obstacles = new List<Obstacle>();
+    }
 
     /*********************************** Methods ***********************************/
     /// <summary>

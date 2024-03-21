@@ -1,53 +1,83 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
 using UnityEngine;
 
-public class Hero : MovingObject, IHittable
+public class Hero : MovingObject
 {
     /*********************************** Fields ***********************************/
-    private int _health;
-    int IHittable.health
-    {
-        get { return _health; }
-        set { _health = value; }
-    }
+
+    HeroHittableComp hittableComp;
 
     // Created in Awake where prefabs are available
     private MeleeAttack meleeAttack;
     private RangedAttack rangedAttack;
 
-    // Assigned in the editor, instantiated in Start()
+    // Assigned in the editor, instantiated in Awake()
     // location updated to mouse in Update().
     public GameObject shootingCrossbar;
 
+    // assigned in the editor
+    public GameObject bulletPrefab;
+    // created in Awake()
+    private static ProjSpawner bulletSpawner = null;
+
     /*********************************** Ctor ***********************************/
-    /// <summary>
-    /// Init the health.
-    /// </summary>
-    public Hero()
+    public Hero() : base() 
     {
-        // specified in the specs
-        this._health = 30;
+        // can create the melee attack here.
+        // but for consistency create it in Awake() instead.
     }
 
+    /*********************************** Settings ***********************************/
+    public static readonly Vector2 meleeAttackRange = new Vector2(3.0f, 3.0f);
+
     /*********************************** MonoBehaviour ***********************************/
-    // Start is called before the first frame update
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
+
+        // instantiate the shooting crossbar at the center of the screen.
+        shootingCrossbar = GameObject.Instantiate(shootingCrossbar, Vector3.zero, Quaternion.identity);
+
+        // create the bullet spawner, if not created yet.
+        if(bulletSpawner == null)
+        {
+            // assigned in the editor
+            Debug.Assert(bulletPrefab != null);
+            bulletSpawner = new ProjSpawner(bulletPrefab);
+        }
+
+        // create the hittable comp
+        hittableComp = gameObject.AddComponent<HeroHittableComp>();
+        // specified
+        hittableComp.setHealth(30);
+
+        // Create the attacks
+        meleeAttack = new HeroMeleeAttack(this, 2, 2.0f, meleeAttackRange);
+        rangedAttack = new HeroRangedAttack(this, 1, 0.5f, 2.0f, bulletSpawner);
     }
 
     // Update is called once per frame
     protected override void Update()
     {
+        if ((this as IHittable).dead())
+        {
+            // Do nothing here.
+            // It is the Game's responsibility to react to this event.
+            return;
+        }
+
         base.Update();
 
-        if((this as IHittable).dead())
+        // 1. update shooting crossbar
+        // 2. response to user inputs
+
+        // 1.
         {
-            // stateMgr.gameOver();
-            destroy();
-            throw new NotImplementedException();
+            
         }
+
     }
 }
