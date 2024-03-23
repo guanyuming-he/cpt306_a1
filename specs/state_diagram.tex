@@ -16,29 +16,37 @@
 	\node[state,accepting]	(V)		[left=of P]			{V};
 
 
-	\path[->] (MU) edge					node	[near start,sloped,align=right]	{\texttt{startGame()} level := 1\\score := 0}	
+	\path[->] (MU) edge					node	[sloped,above]	{\texttt{startGame()}}	
 		(R);
-	\path[->] (R)  edge	[bend right=15]	node	[sloped,above]					{\texttt{pause()}}			
+	\path[->] (R)  edge	[bend right=15]	node	[sloped,above]	{\texttt{pause()}}			
 		(P);
-	\path[->] (P)  edge	[bend right=15]	node	[sloped,below]					{\texttt{resume()}}		
+	\path[->] (P)  edge	[bend right=15]	node	[sloped,below]	{\texttt{resume()}}		
 		(R);
-	\path[->] (P)  edge					node	[sloped,above]					{\texttt{goHome()}}		
+	\path[->] (P)  edge	[bend right=45]	node	[sloped,below]	{\texttt{restart()}}		
+		(R);
+	\path[->] (P)  edge					node	[sloped,above]	{\texttt{goHome()}}		
 		(MU);
-	\path[->] (R)  edge	[bend left]		node	[sloped,below]					{\texttt{win()}}
+	\path[->] (R)  edge	[bend left]		node	[sloped,below]	{\texttt{win()}}
 		(V);
-	\path[->] (V)  edge	[bend left]		node	[sloped,above]					{\texttt{goHome()}}
+	\path[->] (V)  edge	[bend left]		node	[sloped,above]	{\texttt{goHome()}}
 		(MU);
-	\path[->] (R)  edge [bend right]	node	[sloped,below]					{\texttt{gameOver()}}
+	\path[->] (R)  edge [bend right]	node	[sloped,below]	{\texttt{gameOver()}}
 		(GO);
-	\path[->] (GO) edge	[bend right]	node	[sloped,above]					{\texttt{goHome()}}
+	\path[->] (GO) edge	[bend right]	node	[sloped,above]	{\texttt{goHome()}}
 		(MU);
-	\path[->] (N)  edge					node	[sloped,above]					{\texttt{goHome()}}
+	\path[->] (N)  edge					node	[sloped,above]	{\texttt{goHome()}}
 		(MU);
-	\path[->] (N)  edge	[bend right=15]	node	[sloped,above,align=center]		{\texttt{continueGame()}\\++level}
+	\path[->] (N)  edge	[bend right=15]	node	[sloped,above]	{\texttt{continueGame()}}
 		(R);
-	\path[->] (R)  edge	[bend right=15]	node	[sloped,below]					{\texttt{nextLevel()}}
+	\path[->] (R)  edge	[bend right=15]	node	[sloped,below]	{\texttt{nextLevel()}}
 		(N);
 
+	\node [anchor=top,below=3mm of R.south,align=left] {%
+		\texttt{startGame()}: level := 1, score := 0\\
+		\texttt{continueGame()}: ++level, reset timer.\\
+		\texttt{restart()}: level := 1, score := 0. reset timer.\\
+		\texttt{goHome()}: reset timer.
+	};
 
 \end{tikzpicture}
 \end{document}

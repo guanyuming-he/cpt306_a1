@@ -24,13 +24,21 @@ public class StateManager
     private int score;
 
     /*********************************** Ctors ***********************************/
+    
+    public State getState() { return state; }
+    public int getScore() { return score; }
+
     public StateManager()
     {
+        // should be available before all.
+        Debug.Assert(Game.gameSingleton != null);
+
         level = 1;
         state = State.MAIN_UI;
         score = 0;
 
         // enable the timer on creation. loop = false.
+        // timer will only update when the state is RUNNING
         levelTimer = new Timer(30.0f, onLevelTimerFired, false, false);
     }
 
@@ -38,12 +46,17 @@ public class StateManager
     public void startGame()
     {
         Debug.Assert(state == State.MAIN_UI);
+
+        level = 1;
+        score = 0;
         state = State.RUNNING;
     }
 
     public void goHome()
     {
         Debug.Assert(state != State.MAIN_UI && state != State.RUNNING);
+
+        levelTimer.resetTimer();
         state = State.MAIN_UI;
     }
 
@@ -59,23 +72,37 @@ public class StateManager
         state = State.RUNNING;
     }
 
+    /// <summary>
+    /// Restart from the first level.
+    /// </summary>
+    public void restart()
+    {
+        Debug.Assert(state == State.PAUSED);
+
+        level = 1;
+        score = 0;
+        state = State.RUNNING;
+    }
+
     public void continueGame()
     {
         Debug.Assert(state == State.NEXT_LEVEL);
+        // For this assignment, we only have two levels.
+        // so I can only continue from level 1.
         Debug.Assert(level == 1);
 
-        state = State.RUNNING;
         ++level;
         levelTimer.resetTimer();
+        state = State.RUNNING;
     }
 
-    private void nextLevel()
+    public void nextLevel()
     {
         Debug.Assert(state == State.RUNNING);
         state = State.NEXT_LEVEL;
     }
 
-    private void win()
+    public void win()
     {
         Debug.Assert(state == State.RUNNING);
         state = State.VICTORY;
@@ -98,11 +125,11 @@ public class StateManager
     {
         if(level == 1)
         {
-            nextLevel();
+            Game.gameSingleton.nextLevel();
         }
         else if(level == 2)
         {
-            win();
+            Game.gameSingleton.win();
         }
     }
 

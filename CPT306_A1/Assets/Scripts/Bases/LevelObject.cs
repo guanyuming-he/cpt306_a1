@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class LevelObject : MonoBehaviour
 {
+    // no level object is bigger than this size.
+    public static readonly Vector2 size = Vector2.one;
+
     /*********************************** MonoBehaviour ***********************************/
     // Declare them as virtual to ensure correct init/update order.
     protected virtual void Awake()

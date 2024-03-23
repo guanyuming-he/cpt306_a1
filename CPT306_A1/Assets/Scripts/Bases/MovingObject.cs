@@ -17,17 +17,27 @@ public abstract class MovingObject : LevelObject
         this.direction = direction;
     }
 
-    /*********************************** MonoBehaviour ***********************************/
-    // Start is called before the first frame update
+    /*********************************** Methods ***********************************/
+    /// <summary>
+    /// Returns the position next frame.
+    /// Hero and enemy override this to cap themselves inside map.
+    /// Projectiles use this to destroy themselves when nextPos would result in outside of the map.
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
+    protected virtual Vector2 nextPos(float dt)
+    {
+        return getPos() + dt * speed * direction;
+    }
 
+    /*********************************** MonoBehaviour ***********************************/
 
     protected override void Update()
     {
         base.Update();
 
         transform.rotation = Quaternion.Euler(0, 0, directionToRotationAngle(direction));
-        var dir3d = new Vector3(direction.x, direction.y, 0.0f);
-        transform.position += Time.deltaTime * speed * dir3d;
+        transform.position = nextPos(Time.deltaTime);       
     }
 
     /*********************************** static helpers ***********************************/

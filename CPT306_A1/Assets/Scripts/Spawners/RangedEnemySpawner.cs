@@ -11,6 +11,8 @@ public class RangedEnemySpawner : LevelObjSpawner<RangedEnemy>
 
     public override RangedEnemy spawnRandom(Map map)
     {
+        // As enemies are spawned after hero,
+        // could use the hero information here.
         return base.spawnRandom(map);
     }
 

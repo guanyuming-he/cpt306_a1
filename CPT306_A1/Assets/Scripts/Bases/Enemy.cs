@@ -9,11 +9,29 @@ public abstract class Enemy : MovingObject
     // must be created in Awake() by AddComponent()
     protected EnemyHittableComp hittableComp;
 
-    public static readonly float width = .8f;
-    public static readonly float height = .8f;
-    public static readonly float diagonal = Mathf.Sqrt(width * width + height + height);
+    public static new readonly Vector2 size = new Vector2(.8f, .8f);
 
     public Enemy() : base() {}
+
+    /// <summary>
+    /// Cap enemies inside the map
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
+    protected override Vector2 nextPos(float dt)
+    {
+        var next = base.nextPos(dt);
+
+        // cap next inside map
+        var half = .5f * size;
+        next.x = Mathf.Max(Map.mapMinX + half.x, next.x);
+        next.x = Mathf.Min(Map.mapMaxX - half.x, next.x);
+        next.y = Mathf.Max(Map.mapMinY + half.y, next.y);
+        next.y = Mathf.Min(Map.mapMaxY - half.y, next.y);
+
+        return next;
+    }
+
 
     protected override void Awake()
     {

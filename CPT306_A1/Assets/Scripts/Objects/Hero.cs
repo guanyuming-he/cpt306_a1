@@ -20,9 +20,7 @@ public class Hero : MovingObject
     // created in Awake()
     private static ProjSpawner bulletSpawner = null;
 
-    public static readonly float width = .8f;
-    public static readonly float height = .8f;
-    public static readonly float diagonal = Mathf.Sqrt(width * width + height + height);
+    public static new readonly Vector2 size = new Vector2(.8f, .8f);
 
     /*********************************** Ctor ***********************************/
     public Hero() : base() 
@@ -35,6 +33,26 @@ public class Hero : MovingObject
 
     /*********************************** Settings ***********************************/
     public static readonly Vector2 meleeAttackRange = new Vector2(3.0f, 3.0f);
+
+    /*********************************** Methods ***********************************/
+    /// <summary>
+    /// Cap the hero inside the map
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
+    protected override Vector2 nextPos(float dt)
+    {
+        var next = base.nextPos(dt);
+
+        // cap next inside map
+        var half = .5f * size;
+        next.x = Mathf.Max(Map.mapMinX + half.x, next.x);
+        next.x = Mathf.Min(Map.mapMaxX - half.x, next.x);
+        next.y = Mathf.Max(Map.mapMinY + half.y, next.y);
+        next.y = Mathf.Min(Map.mapMaxY - half.y, next.y);
+
+        return next;
+    }
 
     /*********************************** MonoBehaviour ***********************************/
     protected override void Awake()
