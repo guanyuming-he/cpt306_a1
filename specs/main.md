@@ -94,8 +94,8 @@ Note: on the main menu the game object is not created yet. So there is not a sta
     - `private` as only the manager can decide if the game has won or not.
 - `gameOver()` brings state from `R` to `GO`.
 - `onLevelTimerFired()` checks `level`.
-    - `level = 1 -> nextLevel()`
-    - `level = 2 -> win()`
+    - `level = 1 -> Game.nextLevel()`
+    - `level = 2 -> Game.win()`
 
 ## Update
 - if `state != R`, then do nothing.

@@ -18,7 +18,7 @@ public class StateManager
 
     /*********************************** Fields ***********************************/
 
-    private Timer levelTimer;
+    private readonly Timer levelTimer;
     private int level;
     private State state;
     private int score;

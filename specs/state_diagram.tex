@@ -30,18 +30,24 @@
 		(V);
 	\path[->] (V)  edge	[bend left]		node	[sloped,above]	{\texttt{goHome()}}
 		(MU);
+	\path[->] (V)  edge	[bend right=60]	node	[sloped,below]	{\texttt{restart()}}
+		(R);
 	\path[->] (R)  edge [bend right]	node	[sloped,below]	{\texttt{gameOver()}}
 		(GO);
 	\path[->] (GO) edge	[bend right]	node	[sloped,above]	{\texttt{goHome()}}
 		(MU);
+	\path[->] (GO) edge	[bend left=60]	node	[sloped,below]	{\texttt{restart()}}
+		(R);
 	\path[->] (N)  edge					node	[sloped,above]	{\texttt{goHome()}}
 		(MU);
 	\path[->] (N)  edge	[bend right=15]	node	[sloped,above]	{\texttt{continueGame()}}
 		(R);
+	\path[->] (N)  edge	[bend left=45]	node	[sloped,below]	{\texttt{restart()}}
+		(R);
 	\path[->] (R)  edge	[bend right=15]	node	[sloped,below]	{\texttt{nextLevel()}}
 		(N);
 
-	\node [anchor=top,below=3mm of R.south,align=left] {%
+	\node [anchor=top,below=1cm of R.south,align=left] {%
 		\texttt{startGame()}: level := 1, score := 0\\
 		\texttt{continueGame()}: ++level, reset timer.\\
 		\texttt{restart()}: level := 1, score := 0. reset timer.\\

@@ -8,11 +8,11 @@ using UnityEngine;
 public sealed class Game : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
-    StateManager stateMgr;
+    readonly StateManager stateMgr;
     UIManager uiMgr;
 
     // contains all the level objects
-    public Map map;
+    public readonly Map map;
 
     // spawners
     ObstacleSpawner obsSpawner;
@@ -33,6 +33,7 @@ public sealed class Game : MonoBehaviour
     GameObject pauseMenuPrefab;
     GameObject nextLevelPrefab;
     GameObject victoryMenuPrefab;
+    GameObject gameOverMenuPrefab;
     GameObject inGameMenuPrefab;
 
     // Will always be available before all's ctor
@@ -98,14 +99,16 @@ public sealed class Game : MonoBehaviour
     {
         // stateMgr asserts the state already.
 
-        // reset the level objects
-        resetLevel(1);
-
-        // state change
         stateMgr.startGame();
+        uiMgr.hideAllUI();
+
+        // reset and create the level objects
+        resetLevel(1);
     }
 
-    // called when the player wants to pause the game during gameplay
+    /// <summary>
+    /// called when the player wants to pause the game during gameplay
+    /// </summary>
     public void pauseGame()
     {
         // stateMgr asserts the state already.
@@ -114,12 +117,29 @@ public sealed class Game : MonoBehaviour
         uiMgr.showPauseMenu();
     }
 
+    /// <summary>
+    /// called when the player resumes a paused game
+    /// </summary>
     public void resumeGame()
     {
         // stateMgr asserts the state already.
 
         stateMgr.resume();
-        uiMgr.hideAllMenus();
+        uiMgr.hideAllExceptInGameUI();
+    }
+
+    /// <summary>
+    /// Restart from level 1
+    /// </summary>
+    public void restartGame()
+    {
+        // stateMgr asserts the state already.
+
+        stateMgr.restart();
+        uiMgr.hideAllUI();
+
+        // reset and create the level objects
+        resetLevel(1);
     }
 
     /// <summary>
@@ -129,14 +149,14 @@ public sealed class Game : MonoBehaviour
     ///     - calls `stateMgr.continueGame()`
     /// </summary>
     public void continueGame()
-    {        
+    {
         // stateMgr asserts the state already.
 
-        // reset the level objects
-        resetLevel(2);
-
-        // state change
         stateMgr.continueGame();
+        uiMgr.hideAllUI();
+
+        // reset and create the level objects
+        resetLevel(2);
     }
 
     /// <summary>
@@ -147,8 +167,9 @@ public sealed class Game : MonoBehaviour
     {
         // stateMgr asserts the state already.
 
-        stateMgr.nextLevel();
+        uiMgr.hideAllUI();
 
+        stateMgr.nextLevel();
         uiMgr.showNextLevelMenu();
     }
 
@@ -160,9 +181,23 @@ public sealed class Game : MonoBehaviour
     {
         // stateMgr asserts the state already.
 
-        stateMgr.win();
+        uiMgr.hideAllUI();
 
+        stateMgr.win();
         uiMgr.showVictoryMenu();
+    }
+
+    /// <summary>
+    /// When the hero dies
+    /// </summary>
+    public void gameOver()
+    {
+        // stateMgr asserts the state already.
+
+        uiMgr.hideAllUI();
+
+        stateMgr.gameOver();
+        uiMgr.showGameOverMenu();
     }
 
     /// <summary>
@@ -174,6 +209,7 @@ public sealed class Game : MonoBehaviour
 
         // destroy all level objects
         map.clear();
+        uiMgr.hideAllUI();
 
         // state change
         stateMgr.goHome();
@@ -193,6 +229,7 @@ public sealed class Game : MonoBehaviour
 
         // destroy all level objects
         map.clear();
+        uiMgr.hideAllUI();
 
         Application.Quit(0);
     }
@@ -200,6 +237,8 @@ public sealed class Game : MonoBehaviour
     /*********************************** Private Helpers ***********************************/
     /// <summary>
     /// Destroys and recreates all level objects with the configured spawners
+    /// 
+    /// In addition, shows the in game ui
     /// </summary>
     /// <param name="levelNum">number of the level</param>
     private void resetLevel(int levelNum)
@@ -216,8 +255,8 @@ public sealed class Game : MonoBehaviour
         // according to the levelNum
         createObjects(levelNum);
 
-        // bind objects to the UI manager
-        throw new NotImplementedException();
+        // shows the in game menu
+        uiMgr.showInGameMenu();
     }
 
     /// <summary>
@@ -264,8 +303,13 @@ public sealed class Game : MonoBehaviour
         Debug.Assert(pauseMenuPrefab != null, "Assign the prefab in the editor");
         Debug.Assert(nextLevelPrefab != null, "Assign the prefab in the editor");
         Debug.Assert(victoryMenuPrefab != null, "Assign the prefab in the editor");
+        Debug.Assert(gameOverMenuPrefab != null, "Assign the prefab in the editor");
         Debug.Assert(inGameMenuPrefab != null, "Assign the prefab in the editor");
-        uiMgr = new UIManager(mainMenuPrefab, pauseMenuPrefab, nextLevelPrefab, victoryMenuPrefab, inGameMenuPrefab);
+        uiMgr = new UIManager
+        (
+            mainMenuPrefab, pauseMenuPrefab, nextLevelPrefab, 
+            victoryMenuPrefab, gameOverMenuPrefab, inGameMenuPrefab
+        );
 
         // spawners need prefabs
         Debug.Assert(obsPrefab != null, "Assign the prefab in the editor");
@@ -310,7 +354,20 @@ public sealed class Game : MonoBehaviour
             }
         }
 
+        // respond to other game logic if the game is running
+        if(stateMgr.getState() == StateManager.State.RUNNING)
+        {
+            // if the hero is dead
+            Debug.Assert(map.hero != null, "Hero will always be there when running, even when dead.");
+            var hittable = map.hero.gameObject.GetComponent<HeroHittableComp>();
+            if (hittable.dead())
+            {
+                gameOver();
+            }
 
-        throw new NotImplementedException();
+            // victory conditions are checked in the state manager.
+        }
+
+        throw new NotImplementedException("Check if I have missed anything");
     }
 }
