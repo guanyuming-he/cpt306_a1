@@ -27,13 +27,13 @@ public abstract class LevelObject : MonoBehaviour
     /*********************************** Methods ***********************************/
     public void setPos(Vector2 pos)
     {
-        transform.position =
-            new Vector3(pos.x, pos.y, transform.position.z);
+        gameObject.transform.position =
+            new Vector3(pos.x, pos.y, gameObject.transform.position.z);
     }
 
     public Vector2 getPos()
     {
-        return new Vector2(transform.position.x, transform.position.y);
+        return new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
     }
 
     public void destroy()

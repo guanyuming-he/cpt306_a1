@@ -8,8 +8,9 @@ using UnityEngine;
 public sealed class Game : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
-    readonly StateManager stateMgr;
-    UIManager uiMgr;
+    public readonly StateManager stateMgr;
+    // assigned in editor
+    public UIManager uiMgr;
 
     // contains all the level objects
     public readonly Map map;
@@ -22,19 +23,11 @@ public sealed class Game : MonoBehaviour
     RangedEnemySpawner rangedSpawner;
 
     // object prefabs
-    GameObject obsPrefab;
-    GameObject desObsPrefab;
-    GameObject heroPrefab;
-    GameObject meleeEnemyPrefab;
-    GameObject rangedEnemyPrefab;
-
-    // ui prefabs
-    GameObject mainMenuPrefab;
-    GameObject pauseMenuPrefab;
-    GameObject nextLevelPrefab;
-    GameObject victoryMenuPrefab;
-    GameObject gameOverMenuPrefab;
-    GameObject inGameMenuPrefab;
+    public GameObject obsPrefab;
+    public GameObject desObsPrefab;
+    public GameObject heroPrefab;
+    public GameObject meleeEnemyPrefab;
+    public GameObject rangedEnemyPrefab;
 
     // Will always be available before all's ctor
     // (because Game creates all, and in its ctor, the singleton var is assigned first).
@@ -64,7 +57,7 @@ public sealed class Game : MonoBehaviour
     public Game()
     {
         // can only have one instance per game
-        Debug.Assert(gameSingleton == null);
+        System.Diagnostics.Debug.Assert(gameSingleton == null);
         gameSingleton = this;
 
         // Create the managers that don't need prefabs
@@ -225,7 +218,7 @@ public sealed class Game : MonoBehaviour
     {
         // this time stateMgr can't assert anything
         // because I will not use it.
-        Debug.Assert(stateMgr.getState() == StateManager.State.MAIN_UI);
+        System.Diagnostics.Debug.Assert(stateMgr.getState() == StateManager.State.MAIN_UI);
 
         // destroy all level objects
         map.clear();
@@ -299,24 +292,14 @@ public sealed class Game : MonoBehaviour
         // basically the things that need prefabs
 
         // ui mgr needs prefabs
-        Debug.Assert(mainMenuPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(pauseMenuPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(nextLevelPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(victoryMenuPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(gameOverMenuPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(inGameMenuPrefab != null, "Assign the prefab in the editor");
-        uiMgr = new UIManager
-        (
-            mainMenuPrefab, pauseMenuPrefab, nextLevelPrefab, 
-            victoryMenuPrefab, gameOverMenuPrefab, inGameMenuPrefab
-        );
+        uiMgr = GameObject.Instantiate(uiMgr);
 
         // spawners need prefabs
-        Debug.Assert(obsPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(desObsPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(heroPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(meleeEnemyPrefab != null, "Assign the prefab in the editor");
-        Debug.Assert(rangedEnemyPrefab != null, "Assign the prefab in the editor");
+        System.Diagnostics.Debug.Assert(obsPrefab != null, "Assign the prefab in the editor");
+        System.Diagnostics.Debug.Assert(desObsPrefab != null, "Assign the prefab in the editor");
+        System.Diagnostics.Debug.Assert(heroPrefab != null, "Assign the prefab in the editor");
+        System.Diagnostics.Debug.Assert(meleeEnemyPrefab != null, "Assign the prefab in the editor");
+        System.Diagnostics.Debug.Assert(rangedEnemyPrefab != null, "Assign the prefab in the editor");
         heroSpawner = new HeroSpawner(heroPrefab);
         obsSpawner = new ObstacleSpawner(obsPrefab);
         desObsSpawner = new DesObsSpawner(desObsPrefab);
@@ -333,32 +316,31 @@ public sealed class Game : MonoBehaviour
     /// <summary>
     /// All of the game logic is handled here.
     /// </summary>
-    /// <exception cref="NotImplementedException">unfinished</exception>
     private void Update()
     {
         stateMgr.update(Time.deltaTime);
 
-        // respond to key presses that bring up UI
-        {
-            // space pauses/resumes the game
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (stateMgr.getState() == StateManager.State.RUNNING)
-                {
-                    pauseGame();
-                }
-                else if (stateMgr.getState() == StateManager.State.PAUSED)
-                {
-                    resumeGame();
-                }
-            }
-        }
-
         // respond to other game logic if the game is running
         if(stateMgr.getState() == StateManager.State.RUNNING)
         {
+            // respond to key presses that bring up UI
+            {
+                // space pauses/resumes the game
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    if (stateMgr.getState() == StateManager.State.RUNNING)
+                    {
+                        pauseGame();
+                    }
+                    else if (stateMgr.getState() == StateManager.State.PAUSED)
+                    {
+                        resumeGame();
+                    }
+                }
+            }
+
             // if the hero is dead
-            Debug.Assert(map.hero != null, "Hero will always be there when running, even when dead.");
+            System.Diagnostics.Debug.Assert(map.hero != null, "Hero will always be there when running, even when dead.");
             var hittable = map.hero.gameObject.GetComponent<HeroHittableComp>();
             if (hittable.dead())
             {
@@ -368,6 +350,6 @@ public sealed class Game : MonoBehaviour
             // victory conditions are checked in the state manager.
         }
 
-        throw new NotImplementedException("Check if I have missed anything");
+        //throw new NotImplementedException("Check if I have missed anything");
     }
 }

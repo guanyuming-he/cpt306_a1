@@ -27,11 +27,20 @@ public class StateManager
     
     public State getState() { return state; }
     public int getScore() { return score; }
+    public void addScore(int s)
+    {
+        if (s <= 0)
+        {
+            throw new ArgumentException("can only add positive number to the score.");
+        }
+
+        score += s;
+    }
 
     public StateManager()
     {
         // should be available before all.
-        Debug.Assert(Game.gameSingleton != null);
+        System.Diagnostics.Debug.Assert(Game.gameSingleton != null);
 
         level = 1;
         state = State.MAIN_UI;
@@ -45,7 +54,7 @@ public class StateManager
     /*********************************** Methods ***********************************/
     public void startGame()
     {
-        Debug.Assert(state == State.MAIN_UI);
+        System.Diagnostics.Debug.Assert(state == State.MAIN_UI);
 
         level = 1;
         score = 0;
@@ -54,7 +63,7 @@ public class StateManager
 
     public void goHome()
     {
-        Debug.Assert(state != State.MAIN_UI && state != State.RUNNING);
+        System.Diagnostics.Debug.Assert(state != State.MAIN_UI && state != State.RUNNING);
 
         levelTimer.resetTimer();
         state = State.MAIN_UI;
@@ -62,13 +71,13 @@ public class StateManager
 
     public void pause()
     {
-        Debug.Assert(state == State.RUNNING);
+        System.Diagnostics.Debug.Assert(state == State.RUNNING);
         state = State.PAUSED;
     }
 
     public void resume()
     {
-        Debug.Assert(state == State.PAUSED);
+        System.Diagnostics.Debug.Assert(state == State.PAUSED);
         state = State.RUNNING;
     }
 
@@ -77,7 +86,7 @@ public class StateManager
     /// </summary>
     public void restart()
     {
-        Debug.Assert(state == State.PAUSED);
+        System.Diagnostics.Debug.Assert(state == State.PAUSED);
 
         level = 1;
         score = 0;
@@ -86,10 +95,10 @@ public class StateManager
 
     public void continueGame()
     {
-        Debug.Assert(state == State.NEXT_LEVEL);
+        System.Diagnostics.Debug.Assert(state == State.NEXT_LEVEL);
         // For this assignment, we only have two levels.
         // so I can only continue from level 1.
-        Debug.Assert(level == 1);
+        System.Diagnostics.Debug.Assert(level == 1);
 
         ++level;
         levelTimer.resetTimer();
@@ -98,13 +107,13 @@ public class StateManager
 
     public void nextLevel()
     {
-        Debug.Assert(state == State.RUNNING);
+        System.Diagnostics.Debug.Assert(state == State.RUNNING);
         state = State.NEXT_LEVEL;
     }
 
     public void win()
     {
-        Debug.Assert(state == State.RUNNING);
+        System.Diagnostics.Debug.Assert(state == State.RUNNING);
         state = State.VICTORY;
 
         // save score to file.
@@ -113,7 +122,7 @@ public class StateManager
 
     public void gameOver()
     {
-        Debug.Assert(state == State.RUNNING);
+        System.Diagnostics.Debug.Assert(state == State.RUNNING);
         state = State.GAME_OVER;
     }
 

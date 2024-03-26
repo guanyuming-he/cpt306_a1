@@ -64,9 +64,9 @@ public abstract class MovingObject : LevelObject
     /// <returns>the rotation angle (in degrees) represented by the direction</returns>
     public static float directionToRotationAngle(in Vector2 dir)
     {
-        Debug.Assert(dir.x != 0.0f);
+        System.Diagnostics.Debug.Assert(dir.x != 0.0f);
 
         // magnitude = 1, so x = cos.
-        return Mathf.Acos(dir.x) * Mathf.Rad2Deg;
+        return Mathf.Acos(dir.x) * Mathf.Rad2Deg - 90.0f;
     }
 }

@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using Quaternion = UnityEngine.Quaternion;
 
 public abstract class LevelObjSpawner<T> where T : LevelObject
 {
@@ -69,11 +70,10 @@ public abstract class LevelObjSpawner<T> where T : LevelObject
             throw new System.ArgumentException("pos out of map");
         }
 
-        var gameObj = GameObject.Instantiate(prefab);
+        var gameObj = GameObject.Instantiate(prefab, new UnityEngine.Vector3(pos.x, pos.y, 0.0f), Quaternion.identity);
 		var levelObj = gameObj.GetComponent<T>();
 
-		Debug.Assert(levelObj != null, "I must attach the script to the prefab.");
-		levelObj.setPos(pos);
+		System.Diagnostics.Debug.Assert(levelObj != null, "I must attach the script to the prefab.");
 		return levelObj;
 	}
 

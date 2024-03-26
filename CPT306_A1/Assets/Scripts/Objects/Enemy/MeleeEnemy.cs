@@ -34,8 +34,6 @@ public class MeleeEnemy : Enemy
 
     protected override void Update()
     {
-        attack.update(Time.deltaTime);
-
         var heroPos = Game.gameSingleton.map.hero.getPos();
         var vectorDiff = heroPos - getPos();
 

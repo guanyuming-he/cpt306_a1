@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
 
-public sealed class Projectile : MovingObject
+public abstract class Projectile : MovingObject
 {
+    // set by the one who owns the spawner
     public int dmg;
     public LevelObject src;
 
@@ -15,7 +16,7 @@ public sealed class Projectile : MovingObject
     /// </summary>
     /// <param name="dt"></param>
     /// <returns></returns>
-    protected override UnityEngine.Vector2 nextPos(float dt)
+    protected sealed override UnityEngine.Vector2 nextPos(float dt)
     {
         var next = base.nextPos(dt);
 
@@ -32,23 +33,29 @@ public sealed class Projectile : MovingObject
         return next;
     }
 
-    protected override void Awake()
+    protected sealed override void Awake()
     {
         base.Awake();
 
         // I assume that dmg is set by RangedAttack.attack()
-        Debug.Assert(dmg > 0);
+        System.Diagnostics.Debug.Assert(dmg > 0);
 
         // src is instead set by the spawner.
     }
 
-    protected override void Start()
+    protected sealed override void Start()
     {
         base.Start();
     }
 
-    protected override void Update()
+    protected sealed override void Update()
     {
         base.Update();
+    }
+
+    protected virtual void OnCollisionEnter2D(UnityEngine.Collision2D collision)
+    {
+        // do nothing.
+        // derived class must do something
     }
 }

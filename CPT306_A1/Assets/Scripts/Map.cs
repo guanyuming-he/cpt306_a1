@@ -50,6 +50,13 @@ public class Map
             if (o != null) o.destroy();
         }
         obstacles.Clear();
+
+        // Don't forget to also destroy all projectiles
+        var projs = GameObject.FindObjectsOfType(typeof(Projectile));
+        foreach (Projectile proj in projs)
+        {
+            proj.destroy();
+        }
     }
 
     /// <summary>
@@ -59,7 +66,7 @@ public class Map
     /// <exception cref="InvalidOperationException">if hero is already != null</exception>
     public void addHero(Hero h)
     {
-        Debug.Assert(h != null);
+        System.Diagnostics.Debug.Assert(h != null);
 
         if (hero != null)
         {
@@ -70,13 +77,13 @@ public class Map
 
     public void addEnemy(Enemy e)
     {
-        Debug.Assert(e != null);
+        System.Diagnostics.Debug.Assert(e != null);
         enemies.Add(e);
     }
 
     public void addObstacle(Obstacle o)
     {
-        Debug.Assert(o != null);
+        System.Diagnostics.Debug.Assert(o != null);
         obstacles.Add(o);
     }
 }

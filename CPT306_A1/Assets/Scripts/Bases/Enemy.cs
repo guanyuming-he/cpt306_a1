@@ -23,7 +23,9 @@ public abstract class Enemy : MovingObject
         var next = base.nextPos(dt);
 
         // cap next inside map
-        var half = .5f * size;
+        // use LevelObject's size instead because inside spawner I can't
+        // use T's but to use base's
+        var half = .5f * LevelObject.size;
         next.x = Mathf.Max(Map.mapMinX + half.x, next.x);
         next.x = Mathf.Min(Map.mapMaxX - half.x, next.x);
         next.y = Mathf.Max(Map.mapMinY + half.y, next.y);
@@ -38,7 +40,7 @@ public abstract class Enemy : MovingObject
         base.Awake();
 
         // attack must have been assigned.
-        Debug.Assert(attack != null);
+        System.Diagnostics.Debug.Assert(attack != null);
     }
 
     // Start is called before the first frame update
@@ -50,11 +52,16 @@ public abstract class Enemy : MovingObject
     // Update is called once per frame
     protected override void Update()
     {
-        base.Update();
-
-        if((this as IHittable).dead())
+        var hittable = gameObject.GetComponent<IHittable>();
+        if (hittable.dead())
         {
             destroy();
+            return;
         }
+
+        // don't forget to update attack
+        attack.update(Time.deltaTime);
+
+        base.Update();
     }
 }

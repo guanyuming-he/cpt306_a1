@@ -24,7 +24,6 @@ public abstract class MeleeAttack : Attack
     /// 
     /// </summary>
     /// <remarks>Use Physics2D.BoxCast()</remarks>
-    /// <exception cref="NotImplementedException"></exception>
     protected override void attack(Vector2 pos)
     {
         // TODO: add attack effect.

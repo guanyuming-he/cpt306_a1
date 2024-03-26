@@ -45,7 +45,9 @@ public class Hero : MovingObject
         var next = base.nextPos(dt);
 
         // cap next inside map
-        var half = .5f * size;
+        // use LevelObject's size instead because inside spawner I can't
+        // use T's but to use base's
+        var half = .5f * LevelObject.size;
         next.x = Mathf.Max(Map.mapMinX + half.x, next.x);
         next.x = Mathf.Min(Map.mapMaxX - half.x, next.x);
         next.y = Mathf.Max(Map.mapMinY + half.y, next.y);
@@ -66,7 +68,7 @@ public class Hero : MovingObject
         if(bulletSpawner == null)
         {
             // assigned in the editor
-            Debug.Assert(bulletPrefab != null);
+            System.Diagnostics.Debug.Assert(bulletPrefab != null);
             bulletSpawner = new ProjSpawner(bulletPrefab);
         }
 
@@ -83,26 +85,32 @@ public class Hero : MovingObject
     // Update is called once per frame
     protected override void Update()
     {
-        if ((this as IHittable).dead())
+        var hittable = gameObject.GetComponent<IHittable>();
+        if (hittable.dead())
         {
             // Do nothing here.
             // It is the Game's responsibility to react to this event.
             return;
         }
 
-        base.Update();
-
-        // 1. update shooting crossbar
-        // 2. response to user inputs
+        // 1. update attacks
+        // 2. update shooting crossbar
+        // 3. response to user inputs
 
         // 1.
         {
-            var mouseScreenPos = Input.mousePosition;
-            var mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-            shootingCrossbar.transform.position.Set(mouseWorldPos.x, mouseWorldPos.y, 0.0f);
+            rangedAttack.update(Time.deltaTime);
+            meleeAttack.update(Time.deltaTime);
         }
 
         // 2.
+        {
+            var mouseScreenPos = Input.mousePosition;
+            var mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            shootingCrossbar.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, 0.0f);
+        }
+
+        // 3.
         {
             // Respond to direction keys
             var dirSum = Vector2.zero;
@@ -114,16 +122,17 @@ public class Hero : MovingObject
 
             // Respond to attack keys
             // LMB
-            if(Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 rangedAttack.tryAttack(getPos());
             }
             // RMB
-            if(Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1))
             {
                 meleeAttack.tryAttack(getPos());
             }
         }
 
+        base.Update();
     }
 }

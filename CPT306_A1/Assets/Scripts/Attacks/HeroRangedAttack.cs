@@ -10,7 +10,7 @@ public class HeroRangedAttack : RangedAttack
     public HeroRangedAttack(LevelObject src, int dmg, float cd, float projSpeed, ProjSpawner projSpawner) 
         : base(src, dmg, cd, projSpeed, projSpawner)
     {
-        Debug.Assert(src is Hero);
+        System.Diagnostics.Debug.Assert(src is Hero);
     }
 
     protected override Vector2 calcProjDirection()

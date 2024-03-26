@@ -68,7 +68,7 @@ public abstract class HittableComponent : MonoBehaviour, IHittable
     /*********************************** MonoBehaviour ***********************************/
     protected virtual void Start()
     {
-        Debug.Assert(healthSet, "I must set the health");
+        System.Diagnostics.Debug.Assert(healthSet, "I must set the health");
     }
 
 }

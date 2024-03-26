@@ -1,44 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager
+public class UIManager : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
-    // passed in through ctor
-    readonly GameObject mainMenu;
-    readonly GameObject pauseMenu;
-    readonly GameObject nextLevelMenu;
-    readonly GameObject victoryMenu;
-    readonly GameObject gameOverMenu;
-    readonly GameObject inGameMenu;
+    // Assigned in editor
+    // ui prefabs
+    public GameObject mainMenu;
+    public GameObject pauseMenu;
+    public GameObject nextLevelMenu;
+    public GameObject victoryMenu;
+    public GameObject gameOverMenu;
+    public GameObject inGameMenu;
 
     /*********************************** Ctor ***********************************/
-    public UIManager
-    (
-        GameObject mainMenu, GameObject pauseMenu, GameObject nextLevelMenu, 
-        GameObject victoryMenu, GameObject gameOverMenu, GameObject inGameMenu
-    )
-    {
-        // should be available before all.
-        Debug.Assert(Game.gameSingleton != null);
-
-        // spawn all menus.
-        this.mainMenu =  GameObject.Instantiate(mainMenu);
-        this.pauseMenu = GameObject.Instantiate(pauseMenu);
-        this.nextLevelMenu = GameObject.Instantiate(nextLevelMenu);
-        this.victoryMenu = GameObject.Instantiate(victoryMenu);
-        this.gameOverMenu = GameObject.Instantiate(gameOverMenu);
-        this.inGameMenu = GameObject.Instantiate(inGameMenu);
-
-        // don't forget also to bind the listeners after spawning.
-        bindButtonListeners();
-
-        // hide all, and the in game menu
-        // when I want to show one, call the corresponding method.
-        hideAllUI();
-    }
+    public UIManager() { }
 
     /*********************************** Methods ***********************************/
     /// <summary>
@@ -53,31 +32,59 @@ public class UIManager
 
         // main menu buttons
         {
-            var btns = mainMenu.GetComponents<Button>();
+            var btns = mainMenu.GetComponentsInChildren<Button>();
             // start btn
-            btns[0].onClick.AddListener(onStartGameClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onStartGameClicked);
+            //btns[0].onClick.AddListener(onStartGameClicked);
             // ranking btn
-            btns[1].onClick.AddListener(onRankingClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRankingClicked);
             // credits btn
-            btns[2].onClick.AddListener(onCreditsClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onCreditsClicked);;
             // exit btn
-            btns[3].onClick.AddListener(onExitClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[3].onClick, onExitGameClicked);;
         }
 
         // pause menu buttons
         {
-            var btns = pauseMenu.GetComponents<Button>();
+            var btns = pauseMenu.GetComponentsInChildren<Button>();
             // resume btn
-            btns[0].onClick.AddListener(onResumeGameClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onResumeGameClicked);;
             // restart btn
-            btns[1].onClick.AddListener(onRestartGameClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRestartGameClicked);;
             // home btn
-            btns[2].onClick.AddListener(onHomeClicked);
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onHomeClicked);;
         }
 
-        // ...
-        throw new System.NotImplementedException();
+        // next level buttons
+        {
+            var btns = nextLevelMenu.GetComponentsInChildren<Button>();
+            // next level btn
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onNextLevelClicked);;
+            // restart btn
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRestartGameClicked);;
+            // home btn
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onHomeClicked);;
+        }
 
+        // victory buttons
+        {
+            var btns = victoryMenu.GetComponentsInChildren<Button>();
+            // restart btn
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onRestartGameClicked);;
+            // home btn
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onHomeClicked);;
+        }
+
+        // gameover buttons
+        {
+            var btns = gameOverMenu.GetComponentsInChildren<Button>();
+            // restart btn
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onRestartGameClicked);;
+            // home btn
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onHomeClicked);;
+        }
+
+        //throw new System.NotImplementedException("TODO: credits menu");
     }
 
     public void showMainMenu()
@@ -105,7 +112,7 @@ public class UIManager
         inGameMenu.SetActive(true);
         // TODO: clear previous bindings
         // and bind the in game informations
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
     }
 
     /// <summary>
@@ -128,8 +135,31 @@ public class UIManager
         inGameMenu.SetActive(false);
     }
 
+    private void Awake()
+    {
+        // should be available before all.
+        System.Diagnostics.Debug.Assert(Game.gameSingleton != null);
+
+        // spawn all menus.
+        // inGameMenu before pauseMenu so that if both shown,
+        // then pauseMenu overlapps the in game one.
+        this.inGameMenu= GameObject.Instantiate(inGameMenu);
+        this.mainMenu = GameObject.Instantiate(mainMenu);
+        this.pauseMenu = GameObject.Instantiate(pauseMenu);
+        this.nextLevelMenu = GameObject.Instantiate(nextLevelMenu);
+        this.victoryMenu = GameObject.Instantiate(victoryMenu);
+        this.gameOverMenu = GameObject.Instantiate(gameOverMenu);
+
+        // don't forget also to bind the listeners after spawning.
+        bindButtonListeners();
+
+        // hide all, and the in game menu
+        // when I want to show one, call the corresponding method.
+        hideAllUI();
+    }
+
+
     /*********************************** OnClickHandler ***********************************/
-    // main menu methods
     public void onStartGameClicked()
     {
         Game.gameSingleton.startGame();
@@ -142,12 +172,10 @@ public class UIManager
     {
         throw new System.NotImplementedException();
     }
-    public void onExitClicked()
+    public void onExitGameClicked()
     {
         Game.gameSingleton.exit();
     }
-
-    // pause menu methods
     public void onResumeGameClicked()
     {
         Game.gameSingleton.resumeGame();
@@ -159,5 +187,9 @@ public class UIManager
     public void onHomeClicked()
     {
         Game.gameSingleton.goHome();
+    }
+    public void onNextLevelClicked()
+    {
+        Game.gameSingleton.nextLevel();
     }
 }

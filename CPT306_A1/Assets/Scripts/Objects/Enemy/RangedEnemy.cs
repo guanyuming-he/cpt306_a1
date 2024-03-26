@@ -24,7 +24,7 @@ public sealed class RangedEnemy : Enemy
         if(bulletSpawner == null)
         {
             // assigned in the editor
-            Debug.Assert(bulletPrefab != null);
+            System.Diagnostics.Debug.Assert(bulletPrefab != null);
             bulletSpawner = new ProjSpawner(bulletPrefab);
         }
 
@@ -46,8 +46,6 @@ public sealed class RangedEnemy : Enemy
 
     protected override void Update()
     {
-        attack.update(Time.deltaTime);
-
         var heroPos = Game.gameSingleton.map.hero.getPos();
         var vectorDiff = heroPos - getPos();
 
