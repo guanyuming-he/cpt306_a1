@@ -32,6 +32,7 @@ public class StateManager
     /*********************************** Ctors ***********************************/
     
     public State getState() { return state; }
+    public int getLevelNumber() { return level; }
     public int getScore() { return score; }
     public void addScore(int s)
     {
@@ -66,6 +67,8 @@ public class StateManager
 
     public void goHome()
     {
+        // can be called when
+        // V, P, N, GO
         Game.MyDebugAssert(state != State.MAIN_UI && state != State.RUNNING);
 
         levelTimer.resetTimer();
@@ -89,7 +92,9 @@ public class StateManager
     /// </summary>
     public void restart()
     {
-        Game.MyDebugAssert(state == State.PAUSED);
+        // can be called when
+        // V, P, N, GO
+        Game.MyDebugAssert(state != State.MAIN_UI && state != State.RUNNING);
 
         level = 1;
         score = 0;

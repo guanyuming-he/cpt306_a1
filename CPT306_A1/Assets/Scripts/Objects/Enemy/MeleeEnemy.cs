@@ -24,7 +24,7 @@ public class MeleeEnemy : Enemy
         // create the hittable component
         hittableComp = gameObject.AddComponent<EnemyHittableComp>();
         // specified.
-        hittableComp.setHealth(2);
+        hittableComp.initHealth(2);
     }
 
     protected override void Start()
@@ -34,20 +34,28 @@ public class MeleeEnemy : Enemy
 
     protected override void Update()
     {
+        // Game logic:
+        {
+            var hittable = gameObject.GetComponent<IHittable>();
+            if (hittable.dead())
+            {
+                Game.gameSingleton.spawnAnotherMelee();
+            }
+        }
+
         var heroPos = Game.gameSingleton.map.hero.getPos();
         var vectorDiff = heroPos - getPos();
 
         // chase the hero
         this.direction = vectorDiff.normalized;
+        base.Update();
 
         // if it gets close enough to the hero, then attack.
         // by close enough, I want the attack range can cover at least 1.0f more than the hero.
-        if(vectorDiff.magnitude <= meleeAttackRange.magnitude - 1.0f)
+        if (vectorDiff.magnitude <= meleeAttackRange.magnitude - 1.0f)
         {
             attack.tryAttack(getPos());
         }
-
-        base.Update();
     }
 }
 

@@ -21,13 +21,15 @@ public abstract class HittableComponent : MonoBehaviour, IHittable
     }
 
     /*********************************** Methods ***********************************/
+    public int getHealth() { return health; }
+
     /// <summary>
     /// Init the health after default construction.
     /// </summary>
     /// <param name="startHealth"></param>
     /// <exception cref="InvalidOperationException">health can only be set once.</exception>
     /// <exception cref="ArgumentException">startHealth MUST be > 0.</exception>
-    public void setHealth(int startHealth)
+    public void initHealth(int startHealth)
     {
         Game.MyDebugAssert(!healthSet, "health can ONLY be set once.");
         Game.MyDebugAssert(startHealth > 0, "startHealth MUST be > 0.");

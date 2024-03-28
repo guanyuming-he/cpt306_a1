@@ -150,7 +150,7 @@ CircleCollider2D:
     m_Bits: 1024
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 1280
+    m_Bits: 1792
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295

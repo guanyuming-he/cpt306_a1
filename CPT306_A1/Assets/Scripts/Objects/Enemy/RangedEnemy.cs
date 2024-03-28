@@ -34,7 +34,7 @@ public sealed class RangedEnemy : Enemy
         // create the hittable comp
         hittableComp = gameObject.AddComponent<EnemyHittableComp>();
         // specified
-        hittableComp.setHealth(1);
+        hittableComp.initHealth(1);
 
         base.Awake();
     }
@@ -46,6 +46,15 @@ public sealed class RangedEnemy : Enemy
 
     protected override void Update()
     {
+        // Game logic:
+        {
+            var hittable = gameObject.GetComponent<IHittable>();
+            if (hittable.dead())
+            {
+                Game.gameSingleton.spawnAnotherRanged();
+            }
+        }
+
         var heroPos = Game.gameSingleton.map.hero.getPos();
         var vectorDiff = heroPos - getPos();
 

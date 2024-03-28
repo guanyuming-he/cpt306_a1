@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -23,6 +24,21 @@ public sealed class Game : MonoBehaviour
     HeroSpawner heroSpawner;
     MeleeEnemySpawner meleeSpawner;
     RangedEnemySpawner rangedSpawner;
+
+    // enemy spawn queues: 
+    // when an enemy is killed, then a new one is spawned after a certain time.
+    // I plan to: push one timer to the queue whenever an enemy finds it's killed
+    // when a timer fires (first pushed ALWAYS fires first), it execute the spawning method
+    // and pops the first from the queue.
+    Queue<Timer> meleeSpawnQueue;
+    Queue<Timer> rangedSpawnQueue;
+    // because I can't dequeue while iterating, I mark the number of timers to be dequeued
+    // and dequeue them after the iteration.
+    // Don't forget to reset them back to 0 after each update.
+    private int numMeleeSpawnTimerFiredThisUpdate = 0;
+    private int numRangedSpawnTimerFiredThisUpdate = 0;
+    private static readonly float meleeDeathSpawnTime = 2.0f;
+    private static readonly float rangedDeathSpawnTime = 4.0f;
 
     // object prefabs
     public GameObject obsPrefab;
@@ -67,6 +83,10 @@ public sealed class Game : MonoBehaviour
 
         // Create the map
         map = new Map();
+
+        // create the spawn queues
+        meleeSpawnQueue = new Queue<Timer>();
+        rangedSpawnQueue = new Queue<Timer>();
 
         // all that can't be inited here are inited in Awake().
     }
@@ -235,6 +255,39 @@ public sealed class Game : MonoBehaviour
         Application.Quit(0);
     }
 
+    /// <summary>
+    /// Called whenever a melee enemy dies
+    /// </summary>
+    public void spawnAnotherMelee()
+    {
+        // enqueue a spawn timer that's enabled and loop = false
+        meleeSpawnQueue.Enqueue(new Timer(meleeDeathSpawnTime, meleeSpawnTimerFired, false, false));
+    }
+
+    /// <summary>
+    /// Called whenever a ranged enemy dies
+    /// </summary>
+    public void spawnAnotherRanged()
+    {
+        Game.MyDebugAssert(stateMgr.getLevelNumber() == 2, "For this game, only level 2 has ranged enemies.");
+
+        // enqueue a spawn timer that's enabled and loop = false
+        rangedSpawnQueue.Enqueue(new Timer(rangedDeathSpawnTime, rangedSpawnTimerFired, false, false));
+    }
+
+    private void meleeSpawnTimerFired()
+    {
+        map.addEnemy(meleeSpawner.spawnRandom(map));
+        // dequeue the first one, which is always this timer.
+        ++numMeleeSpawnTimerFiredThisUpdate;
+    }
+    private void rangedSpawnTimerFired()
+    {
+        map.addEnemy(rangedSpawner.spawnRandom(map));
+        // dequeue the first one, which is always this timer.
+        ++numRangedSpawnTimerFiredThisUpdate;
+    }
+
     /*********************************** Private Helpers ***********************************/
     /// <summary>
     /// Destroys and recreates all level objects with the configured spawners
@@ -325,7 +378,7 @@ public sealed class Game : MonoBehaviour
     {
         stateMgr.update(Time.deltaTime);
 
-        // respond to other game logic if the game is running
+        // execute game logic if the game is running
         if(stateMgr.getState() == StateManager.State.RUNNING)
         {
             // respond to key presses that bring up UI
@@ -345,14 +398,54 @@ public sealed class Game : MonoBehaviour
             }
 
             // if the hero is dead
-            Game.MyDebugAssert(map.hero != null, "Hero will always be there when running, even when dead.");
-            var hittable = map.hero.gameObject.GetComponent<HeroHittableComp>();
-            if (hittable.dead())
             {
-                gameOver();
+                Game.MyDebugAssert(map.hero != null, "Hero will always be there when running, even when dead.");
+                var hittable = map.hero.gameObject.GetComponent<HeroHittableComp>();
+                if (hittable.dead())
+                {
+                    gameOver();
+                }
+            }
+
+            // when a enemy dies, it will call a method of mine to spawn another.
+            // but I hold the timers for that here.
+            {
+                // update the spawn timers
+                foreach (var t in meleeSpawnQueue)
+                {
+                    t.update(Time.deltaTime);
+                }
+                foreach (var t in rangedSpawnQueue)
+                {
+                    t.update(Time.deltaTime);
+                }
+
+                // dequeue the fired ones
+                Game.MyDebugAssert
+                (
+                    numMeleeSpawnTimerFiredThisUpdate >= 0 && 
+                    numMeleeSpawnTimerFiredThisUpdate <= meleeSpawnQueue.Count
+                );
+                Game.MyDebugAssert
+                (
+                    numRangedSpawnTimerFiredThisUpdate >= 0 && 
+                    numRangedSpawnTimerFiredThisUpdate <= rangedSpawnQueue.Count
+                );
+                for (int i = 0; i < numMeleeSpawnTimerFiredThisUpdate; ++i)
+                {
+                    meleeSpawnQueue.Dequeue();
+                }
+                for (int i = 0; i < numRangedSpawnTimerFiredThisUpdate; ++i)
+                {
+                    rangedSpawnQueue.Dequeue();
+                }
+                // Don't forget to reset the dequeue counters
+                numMeleeSpawnTimerFiredThisUpdate = 0;
+                numRangedSpawnTimerFiredThisUpdate = 0;
             }
 
             // victory conditions are checked in the state manager.
+            // Nothing to do here.
         }
 
         //throw new NotImplementedException("Check if I have missed anything");
@@ -364,7 +457,7 @@ public sealed class Game : MonoBehaviour
     private static extern void ExitProcess(UInt32 uExitCode);
 
     /// <summary>
-    /// Don't know who the fucked decided that Unity should catch and ignore all assertions and exceptions.
+    /// Don't know who the fuck decided that Unity should catch and ignore all assertions and exceptions.
     /// I won't allow that to happen.
     /// </summary>
     public static void MyDebugAssert(bool condition, String msg = "")

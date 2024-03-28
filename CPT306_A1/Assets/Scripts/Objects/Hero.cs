@@ -82,7 +82,7 @@ public class Hero : MovingObject
         // create the hittable comp
         hittableComp = gameObject.AddComponent<HeroHittableComp>();
         // specified
-        hittableComp.setHealth(30);
+        hittableComp.initHealth(30);
 
         // Create the attacks
         meleeAttack = new HeroMeleeAttack(this, 2, 2.0f, meleeAttackRange);

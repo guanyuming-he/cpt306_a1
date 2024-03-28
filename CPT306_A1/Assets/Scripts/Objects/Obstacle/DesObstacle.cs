@@ -14,7 +14,7 @@ public sealed class DesObstacle : Obstacle
         // create the hittable comp
         hittableComp = gameObject.AddComponent<DesObsHittableComp>();
         // specified, p.2
-        hittableComp.setHealth(3);
+        hittableComp.initHealth(3);
     }
 
     protected override void Update()

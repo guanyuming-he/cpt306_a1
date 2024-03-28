@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 
@@ -80,6 +81,12 @@ public abstract class LevelObjSpawner<T> where T : LevelObject
     {
         foreach (var obs in map.obstacles)
         {
+            // Don't access destroyed objects
+            if(obs == null || obs.gameObject.IsDestroyed())
+            {
+                continue;
+            }
+
             var posDiff = pos - obs.getPos();
             if (posDiff.magnitude <= Obstacle.size.magnitude)
             {

@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
+using TMPro;
 using UnityEditor.Events;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.UI;
 
+/// <summary>
+/// Must be a MonoBehaviour so that 
+///     1. Unity delegate binding (e.g. onClick) works
+///     2. Unity data binding works
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
@@ -20,6 +24,31 @@ public class UIManager : MonoBehaviour
     public GameObject inGameMenu;
     public GameObject creditsMenu;
     public GameObject rankingsMenu;
+
+    /*********************************** UI data binding ***********************************/
+
+    // See https://docs.unity3d.com/Manual/UIE-Binding.html
+
+    public string scoreStrProp
+    {
+        get => String.Format("{0}", Game.gameSingleton.stateMgr.getScore());
+    }
+
+    public string heroHealthStrProp
+    {
+        get
+        {
+            var hero = Game.gameSingleton.map.hero;
+            if (hero == null)
+            {
+                return "0";
+            }
+
+            var hittable = hero.gameObject.GetComponent<HittableComponent>();
+            Game.MyDebugAssert(hittable != null);
+            return String.Format("{0}", hittable.getHealth());
+        }
+    }
 
     /*********************************** Ctor ***********************************/
     public UIManager() { }
@@ -140,8 +169,42 @@ public class UIManager : MonoBehaviour
     public void showRankingsMenu()
     {
         rankingsMenu.SetActive(true);
-        // TODO: read rankings from the file and show them to the menu
-        Game.MyDebugAssert(false, "Not implemented.");
+
+        // read the scores from the file and display them
+        {        
+            // list of (score, datetime)
+            var scoresList = readScoresFromFile();
+            // sort the list by score (ascending order by default)
+            scoresList.Sort((p1, p2) => p1.Key.CompareTo(p2.Key));
+
+            // because the list is sorted in ascending order,
+            // read from the end
+            // Note: It's TMP_Text instead of TextMeshPro
+            var menuTextEntries = rankingsMenu.GetComponentsInChildren<TMP_Text>();
+            // the first one is the title. the last one is the exit button box.
+            // hence length-2
+            for (int i = 0; i < menuTextEntries.Length - 2; ++i)
+            {
+                // the first one is the title. So i+1
+                var textEntry = menuTextEntries[i + 1];
+                // has a score for this one
+                if (i < scoresList.Count)
+                {
+                    var scoresLine = scoresList[scoresList.Count - i - 1];
+                    textEntry.text =
+                    String.Format
+                    (
+                        "{0} at {1}",
+                        scoresLine.Key, scoresLine.Value
+                    );
+                }
+                // does not have a score for this one
+                else
+                {
+                    textEntry.text = "No data";
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -165,6 +228,8 @@ public class UIManager : MonoBehaviour
         hideAllExceptInGameUI();
         inGameMenu.SetActive(false);
     }
+
+    /*********************************** Mono ***********************************/
 
     private void Awake()
     {
@@ -199,6 +264,8 @@ public class UIManager : MonoBehaviour
         // when I want to show one, call the corresponding method.
         hideAllUI();
     }
+
+    /*********************************** Helpers ***********************************/
 
     /// <returns>A list of scores stored in the scores file, in the order they are stored in the file. 
     /// or an empty one if the file does not exit</returns>
@@ -244,7 +311,7 @@ public class UIManager : MonoBehaviour
         return ret;
     }
 
-    /*********************************** OnClickHandler ***********************************/
+    /*********************************** OnClickHandlers ***********************************/
     public void onStartGameClicked()
     {
         Game.gameSingleton.startGame();
