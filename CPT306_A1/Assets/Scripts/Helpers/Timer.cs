@@ -35,6 +35,8 @@ public class Timer
 
     public bool hasFired() { return fired; }
 
+    public float getTimeElapsed() { return timeElapsed; }
+
     /// <summary>
     /// This is not automatically called.
     /// I must explicitly call the method.

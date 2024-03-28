@@ -52,6 +52,11 @@ public abstract class Enemy : MovingObject
     // Update is called once per frame
     protected override void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         var hittable = gameObject.GetComponent<IHittable>();
         if (hittable.dead())
         {

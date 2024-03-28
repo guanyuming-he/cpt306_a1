@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 90585658749423616}
   - component: {fileID: 5375170329478129332}
   - component: {fileID: 5458506704465864402}
-  - component: {fileID: 487841016369234731}
   - component: {fileID: 6554095079048326487}
+  - component: {fileID: 949441775893731032}
   m_Layer: 7
   m_Name: EnemyBullet
   m_TagString: Untagged
@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 8183057088417028377}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8592, y: 0.31, z: 0}
-  m_LocalScale: {x: 0.19834, y: 0.5, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.9991375, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
+  m_Color: {r: 1, g: 0.07403361, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -132,22 +132,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &487841016369234731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8183057088417028377}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da2a7a2e49c0c6f46973ad39910b1144, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 2
-  direction: {x: 0, y: 1}
-  dmg: 1
-  src: {fileID: 0}
 --- !u!50 &6554095079048326487
 Rigidbody2D:
   serializedVersion: 4
@@ -175,3 +159,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &949441775893731032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8183057088417028377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da2a7a2e49c0c6f46973ad39910b1144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0
+  direction: {x: 0, y: 1}
+  dmg: 0
+  src: {fileID: 0}

@@ -34,6 +34,7 @@ public class StateManager
     public State getState() { return state; }
     public int getLevelNumber() { return level; }
     public int getScore() { return score; }
+    public float getLevelTime() { return levelTimer.getTimeElapsed(); }
     public void addScore(int s)
     {
         Game.MyDebugAssert(s > 0, "cannot add non-positive score");
@@ -99,6 +100,8 @@ public class StateManager
         level = 1;
         score = 0;
         state = State.RUNNING;
+
+        levelTimer.resetTimer();
     }
 
     public void continueGame()

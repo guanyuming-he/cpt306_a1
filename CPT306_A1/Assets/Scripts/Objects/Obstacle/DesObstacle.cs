@@ -19,6 +19,11 @@ public sealed class DesObstacle : Obstacle
 
     protected override void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         var hittable = gameObject.GetComponent<IHittable>();
         if(hittable.dead())
         {

@@ -21,6 +21,10 @@ public abstract class LevelObject : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
         // Do nothing.
     }
 

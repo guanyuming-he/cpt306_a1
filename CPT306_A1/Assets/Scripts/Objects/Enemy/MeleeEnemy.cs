@@ -10,7 +10,7 @@ public class MeleeEnemy : Enemy
     public MeleeEnemy() : base() 
     {
         // NOTE: unspecified
-        speed = 2.5f;
+        speed = 0.5f;
 
         // create the attack
         attack = new EnemyMeleeAttack(this, 1, 1.0f, meleeAttackRange);
@@ -34,6 +34,11 @@ public class MeleeEnemy : Enemy
 
     protected override void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         // Game logic:
         {
             var hittable = gameObject.GetComponent<IHittable>();

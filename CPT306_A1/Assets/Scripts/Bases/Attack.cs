@@ -26,12 +26,19 @@ public abstract class Attack
 
     /*********************************** Methods ***********************************/
 
+    public bool inCd() { return inCooldown; }
+    public Timer getCdTimer() { return cdTimer; }
+
     /// <summary>
     /// must be called in containing LevelObject's Update()
     /// </summary>
     /// <param name="dt"></param>
     public void update(float dt)
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
         cdTimer.update(dt);
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEditor.Events;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,7 +32,7 @@ public class UIManager : MonoBehaviour
 
     public string scoreStrProp
     {
-        get => String.Format("{0}", Game.gameSingleton.stateMgr.getScore());
+        get => String.Format("Score:{0}", Game.gameSingleton.stateMgr.getScore());
     }
 
     public string heroHealthStrProp
@@ -41,12 +42,60 @@ public class UIManager : MonoBehaviour
             var hero = Game.gameSingleton.map.hero;
             if (hero == null)
             {
-                return "0";
+                return "Player:\n0";
             }
 
             var hittable = hero.gameObject.GetComponent<HittableComponent>();
             Game.MyDebugAssert(hittable != null);
-            return String.Format("{0}", hittable.getHealth());
+            return String.Format("Player:\n{0}", hittable.getHealth());
+        }
+    }
+
+    public string timeStrProp
+    {
+        get => String.Format("Time:{0}", Game.gameSingleton.stateMgr.getLevelTime());
+    }
+
+    public string meleeCdStrProp
+    {
+        get
+        {
+            var atk = Game.gameSingleton.map.hero.getMeleeAttack();
+            bool ready = !atk.inCd();
+            if(ready)
+            {
+                return "Melee:\nReady.";
+            }
+            else
+            {
+                var timer = atk.getCdTimer();
+                float cdTime = timer.fireTime - timer.getTimeElapsed();
+                return String.Format
+                (
+                    "Melee:\n{0}", cdTime
+                );
+            }
+        }
+    }
+    public string rangedCdStrProp
+    {
+        get
+        {
+            var atk = Game.gameSingleton.map.hero.getRangedAttack();
+            bool ready = !atk.inCd();
+            if (ready)
+            {
+                return "Ranged:\nReady.";
+            }
+            else
+            {
+                var timer = atk.getCdTimer();
+                float cdTime = timer.fireTime - timer.getTimeElapsed();
+                return String.Format
+                (
+                    "Ranged:\n{0}", cdTime
+                );
+            }
         }
     }
 
@@ -158,9 +207,6 @@ public class UIManager : MonoBehaviour
     public void showInGameMenu()
     {
         inGameMenu.SetActive(true);
-        // TODO: clear previous bindings
-        // and bind the in game informations
-        //Game.MyDebugAssert(false, "Not implemented.");
     }
     public void showCreditsMenu()
     {
@@ -263,6 +309,31 @@ public class UIManager : MonoBehaviour
         // hide all, and the in game menu
         // when I want to show one, call the corresponding method.
         hideAllUI();
+    }
+
+    private void Update()
+    {
+        // when the game is running
+        if(Game.gameSingleton.stateMgr.getState() == StateManager.State.RUNNING)
+        {
+            // update the in game menu's texts
+            if(inGameMenu.activeSelf)
+            {
+                var texts = inGameMenu.GetComponentsInChildren<TMP_Text>();
+                Game.MyDebugAssert(texts.Length == 5);
+
+                // 0. time text
+                texts[0].text = timeStrProp;
+                // 1. score text
+                texts[1].text = scoreStrProp;
+                // 2. player health text
+                texts[2].text = heroHealthStrProp;
+                // 3. melee cd text
+                texts[3].text = meleeCdStrProp;
+                // 4. ranged cd text
+                texts[4].text = rangedCdStrProp;
+            }
+        }
     }
 
     /*********************************** Helpers ***********************************/

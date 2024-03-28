@@ -48,6 +48,11 @@ public abstract class Projectile : MovingObject
 
     protected sealed override void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         base.Update();
     }
 

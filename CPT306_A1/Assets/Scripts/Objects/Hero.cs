@@ -35,6 +35,9 @@ public class Hero : MovingObject
     public static readonly Vector2 meleeAttackRange = new Vector2(3.0f, 3.0f);
 
     /*********************************** Methods ***********************************/
+    public Attack getMeleeAttack() { return meleeAttack; }
+    public Attack getRangedAttack() { return rangedAttack; }
+
     /// <summary>
     /// Cap the hero inside the map
     /// </summary>
@@ -92,6 +95,11 @@ public class Hero : MovingObject
     // Update is called once per frame
     protected override void Update()
     {
+        if(!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         var hittable = gameObject.GetComponent<IHittable>();
         if (hittable.dead())
         {

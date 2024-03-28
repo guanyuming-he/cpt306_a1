@@ -93,6 +93,11 @@ public sealed class Game : MonoBehaviour
 
     /*********************************** Methods ***********************************/
 
+    public bool running()
+    {
+        return stateMgr.getState() == StateManager.State.RUNNING;
+    }
+
     /// <summary>
     /// In MonoBehaviour.Start(), this is called to init all things
     /// and bring up the main UI
@@ -251,8 +256,8 @@ public sealed class Game : MonoBehaviour
         GameObject.Destroy(uiMgr.gameObject);
         GameObject.Destroy(this.gameObject);
 
-        // ExitProcess(0);
-        Application.Quit(0);
+        ExitProcess(0);
+        //Application.Quit(0);
     }
 
     /// <summary>
@@ -378,25 +383,25 @@ public sealed class Game : MonoBehaviour
     {
         stateMgr.update(Time.deltaTime);
 
-        // execute game logic if the game is running
-        if(stateMgr.getState() == StateManager.State.RUNNING)
+        // respond to key presses that bring up UI
         {
-            // respond to key presses that bring up UI
+            // space pauses/resumes the game
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                // space pauses/resumes the game
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (stateMgr.getState() == StateManager.State.RUNNING)
                 {
-                    if (stateMgr.getState() == StateManager.State.RUNNING)
-                    {
-                        pauseGame();
-                    }
-                    else if (stateMgr.getState() == StateManager.State.PAUSED)
-                    {
-                        resumeGame();
-                    }
+                    pauseGame();
+                }
+                else if (stateMgr.getState() == StateManager.State.PAUSED)
+                {
+                    resumeGame();
                 }
             }
+        }
 
+        // execute game logic if the game is running
+        if (stateMgr.getState() == StateManager.State.RUNNING)
+        {
             // if the hero is dead
             {
                 Game.MyDebugAssert(map.hero != null, "Hero will always be there when running, even when dead.");

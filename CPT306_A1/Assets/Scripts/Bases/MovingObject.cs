@@ -45,6 +45,11 @@ public abstract class MovingObject : LevelObject
 
     protected override void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         base.Update();
      
         // if I have a rigidBody, then move the rigidbody instead
@@ -81,6 +86,6 @@ public abstract class MovingObject : LevelObject
     public static float directionToRotationAngle(in Vector2 dir)
     {
         // magnitude = 1, so x = cos.
-        return Mathf.Acos(dir.x) * Mathf.Rad2Deg + 90.0f;
+        return Mathf.Acos(dir.x) * Mathf.Rad2Deg;
     }
 }

@@ -16,7 +16,7 @@ public sealed class RangedEnemy : Enemy
     public RangedEnemy() : base() 
     {
         // NOTE: unspecified
-        speed = 2.5f;
+        speed = 0.5f;
     }
 
     protected override void Awake()
@@ -46,6 +46,11 @@ public sealed class RangedEnemy : Enemy
 
     protected override void Update()
     {
+        if (!Game.gameSingleton.running())
+        {
+            return;
+        }
+
         // Game logic:
         {
             var hittable = gameObject.GetComponent<IHittable>();
