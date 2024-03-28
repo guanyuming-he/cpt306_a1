@@ -47,6 +47,9 @@ public sealed class Game : MonoBehaviour
     public GameObject meleeEnemyPrefab;
     public GameObject rangedEnemyPrefab;
 
+    // audio
+    AudioSource bgMusic;
+
     // Will always be available before all's ctor
     // (because Game creates all, and in its ctor, the singleton var is assigned first).
     // Game acts as the mediator. All objects talk to it.
@@ -105,6 +108,16 @@ public sealed class Game : MonoBehaviour
     public void onApplicationStart()
     {
         // init is done it ctor and Awake().
+
+        // bg music
+        {
+            bgMusic = gameObject.GetComponent<AudioSource>();
+            MyDebugAssert(bgMusic != null, "Should assign it.");
+
+            // starts playing the bg music
+            bgMusic.volume = AudioManager.musicStrength();
+            bgMusic.Play();
+        }
 
         uiMgr.showMainMenu();
     }
@@ -397,6 +410,11 @@ public sealed class Game : MonoBehaviour
                     resumeGame();
                 }
             }
+        }
+
+        // audio update
+        {
+            bgMusic.volume = AudioManager.musicStrength();
         }
 
         // execute game logic if the game is running
