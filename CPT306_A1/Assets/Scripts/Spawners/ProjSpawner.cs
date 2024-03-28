@@ -14,7 +14,8 @@ public class ProjSpawner : LevelObjSpawner<Projectile>
     /// <exception cref="System.NotSupportedException"></exception>
     public override Projectile spawnRandom(Map map)
     {
-        throw new System.NotSupportedException();
+        Game.MyDebugAssert(false, "Not supported");
+        throw new NotSupportedException();
     }
 
     /// <summary>

@@ -36,7 +36,10 @@ public abstract class LevelObject : MonoBehaviour
         return new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
     }
 
-    public void destroy()
+    /// <summary>
+    /// Destroys self and all objects it has created.
+    /// </summary>
+    public virtual void destroy()
     {
         UnityEngine.Object.Destroy(gameObject);
     }

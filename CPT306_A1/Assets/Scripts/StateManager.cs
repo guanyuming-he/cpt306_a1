@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using UnityEngine;
 
 public class StateManager
@@ -23,16 +25,17 @@ public class StateManager
     private State state;
     private int score;
 
+    public static readonly String SCORE_FILE_PATH = "game_scores.txt";
+    // score...datetime
+    public static readonly String SCORE_FILE_LINE_FMT = "{0}...{1}";
+
     /*********************************** Ctors ***********************************/
     
     public State getState() { return state; }
     public int getScore() { return score; }
     public void addScore(int s)
     {
-        if (s <= 0)
-        {
-            throw new ArgumentException("can only add positive number to the score.");
-        }
+        Game.MyDebugAssert(s > 0, "cannot add non-positive score");
 
         score += s;
     }
@@ -40,7 +43,7 @@ public class StateManager
     public StateManager()
     {
         // should be available before all.
-        System.Diagnostics.Debug.Assert(Game.gameSingleton != null);
+        Game.MyDebugAssert(Game.gameSingleton != null);
 
         level = 1;
         state = State.MAIN_UI;
@@ -54,7 +57,7 @@ public class StateManager
     /*********************************** Methods ***********************************/
     public void startGame()
     {
-        System.Diagnostics.Debug.Assert(state == State.MAIN_UI);
+        Game.MyDebugAssert(state == State.MAIN_UI);
 
         level = 1;
         score = 0;
@@ -63,7 +66,7 @@ public class StateManager
 
     public void goHome()
     {
-        System.Diagnostics.Debug.Assert(state != State.MAIN_UI && state != State.RUNNING);
+        Game.MyDebugAssert(state != State.MAIN_UI && state != State.RUNNING);
 
         levelTimer.resetTimer();
         state = State.MAIN_UI;
@@ -71,13 +74,13 @@ public class StateManager
 
     public void pause()
     {
-        System.Diagnostics.Debug.Assert(state == State.RUNNING);
+        Game.MyDebugAssert(state == State.RUNNING);
         state = State.PAUSED;
     }
 
     public void resume()
     {
-        System.Diagnostics.Debug.Assert(state == State.PAUSED);
+        Game.MyDebugAssert(state == State.PAUSED);
         state = State.RUNNING;
     }
 
@@ -86,7 +89,7 @@ public class StateManager
     /// </summary>
     public void restart()
     {
-        System.Diagnostics.Debug.Assert(state == State.PAUSED);
+        Game.MyDebugAssert(state == State.PAUSED);
 
         level = 1;
         score = 0;
@@ -95,10 +98,10 @@ public class StateManager
 
     public void continueGame()
     {
-        System.Diagnostics.Debug.Assert(state == State.NEXT_LEVEL);
+        Game.MyDebugAssert(state == State.NEXT_LEVEL);
         // For this assignment, we only have two levels.
         // so I can only continue from level 1.
-        System.Diagnostics.Debug.Assert(level == 1);
+        Game.MyDebugAssert(level == 1);
 
         ++level;
         levelTimer.resetTimer();
@@ -107,22 +110,22 @@ public class StateManager
 
     public void nextLevel()
     {
-        System.Diagnostics.Debug.Assert(state == State.RUNNING);
+        Game.MyDebugAssert(state == State.RUNNING);
         state = State.NEXT_LEVEL;
     }
 
     public void win()
     {
-        System.Diagnostics.Debug.Assert(state == State.RUNNING);
+        Game.MyDebugAssert(state == State.RUNNING);
         state = State.VICTORY;
 
         // save score to file.
-        throw new NotImplementedException();
+        saveScoresToFile();
     }
 
     public void gameOver()
     {
-        System.Diagnostics.Debug.Assert(state == State.RUNNING);
+        Game.MyDebugAssert(state == State.RUNNING);
         state = State.GAME_OVER;
     }
 
@@ -139,6 +142,24 @@ public class StateManager
         else if(level == 2)
         {
             Game.gameSingleton.win();
+        }
+    }
+
+    private void saveScoresToFile()
+    {
+        String scoreLine = String.Format(SCORE_FILE_LINE_FMT, score, DateTime.Now);
+        if (!File.Exists(SCORE_FILE_PATH))
+        {
+            // Create the file to write the score line to.
+            using (StreamWriter sw = File.CreateText(SCORE_FILE_PATH))
+            {
+                sw.WriteLine(scoreLine);
+            }
+        }
+        else
+        {
+            // append the score line to the existing file
+            File.AppendAllLines(SCORE_FILE_PATH, new List<String> { scoreLine });
         }
     }
 

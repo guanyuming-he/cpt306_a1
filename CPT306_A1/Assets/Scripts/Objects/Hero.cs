@@ -56,6 +56,13 @@ public class Hero : MovingObject
         return next;
     }
 
+    public override void destroy()
+    {
+        // Don't forget to destroy the crossbar
+        GameObject.Destroy(shootingCrossbar);
+        base.destroy();
+    }
+
     /*********************************** MonoBehaviour ***********************************/
     protected override void Awake()
     {
@@ -68,7 +75,7 @@ public class Hero : MovingObject
         if(bulletSpawner == null)
         {
             // assigned in the editor
-            System.Diagnostics.Debug.Assert(bulletPrefab != null);
+            Game.MyDebugAssert(bulletPrefab != null);
             bulletSpawner = new ProjSpawner(bulletPrefab);
         }
 
@@ -114,25 +121,27 @@ public class Hero : MovingObject
         {
             // Respond to direction keys
             var dirSum = Vector2.zero;
-            if (Input.GetKeyDown(KeyCode.W)) dirSum += Vector2.up;
-            if (Input.GetKeyDown(KeyCode.S)) dirSum += Vector2.down;
-            if (Input.GetKeyDown(KeyCode.A)) dirSum += Vector2.left;
-            if (Input.GetKeyDown(KeyCode.D)) dirSum += Vector2.right;
+            if (Input.GetKey(KeyCode.W)) dirSum += Vector2.up;
+            if (Input.GetKey(KeyCode.S)) dirSum += Vector2.down;
+            if (Input.GetKey(KeyCode.A)) dirSum += Vector2.left;
+            if (Input.GetKey(KeyCode.D)) dirSum += Vector2.right;
             direction = dirSum.normalized;
+
+            // base updates the location using direction and speed.
+            // do this immediately after calculating direction.
+            base.Update();
 
             // Respond to attack keys
             // LMB
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(0))
             {
                 rangedAttack.tryAttack(getPos());
             }
             // RMB
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButton(1))
             {
                 meleeAttack.tryAttack(getPos());
             }
         }
-
-        base.Update();
     }
 }

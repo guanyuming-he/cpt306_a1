@@ -24,7 +24,7 @@ public sealed class RangedEnemy : Enemy
         if(bulletSpawner == null)
         {
             // assigned in the editor
-            System.Diagnostics.Debug.Assert(bulletPrefab != null);
+            Game.MyDebugAssert(bulletPrefab != null);
             bulletSpawner = new ProjSpawner(bulletPrefab);
         }
 
@@ -51,10 +51,10 @@ public sealed class RangedEnemy : Enemy
 
         // move away from the hero
         this.direction = - vectorDiff.normalized;
+        base.Update();
 
         // attack whenever it can
         attack.tryAttack(getPos());
 
-        base.Update();
     }
 }

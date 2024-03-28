@@ -14,6 +14,7 @@
             {
                 hittable.onHit(dmg, src);
             }
+
             this.destroy();
         }
     }

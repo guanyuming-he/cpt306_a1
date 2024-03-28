@@ -29,15 +29,8 @@ public abstract class HittableComponent : MonoBehaviour, IHittable
     /// <exception cref="ArgumentException">startHealth MUST be > 0.</exception>
     public void setHealth(int startHealth)
     {
-        if (healthSet)
-        {
-            throw new InvalidOperationException("health can only be set once.");
-        }
-        // do not allow creation of dead objects.
-        if (startHealth <= 0)
-        {
-            throw new ArgumentException("startHealth MUST be > 0.");
-        }
+        Game.MyDebugAssert(!healthSet, "health can ONLY be set once.");
+        Game.MyDebugAssert(startHealth > 0, "startHealth MUST be > 0.");
 
         healthSet = true;
         health = startHealth;
@@ -68,7 +61,7 @@ public abstract class HittableComponent : MonoBehaviour, IHittable
     /*********************************** MonoBehaviour ***********************************/
     protected virtual void Start()
     {
-        System.Diagnostics.Debug.Assert(healthSet, "I must set the health");
+        Game.MyDebugAssert(healthSet, "I must set the health");
     }
 
 }

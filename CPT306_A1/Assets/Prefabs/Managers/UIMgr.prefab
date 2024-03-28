@@ -50,3 +50,5 @@ MonoBehaviour:
   victoryMenu: {fileID: 7375619140214778457, guid: 214cea6bde25f654593d17229753f273, type: 3}
   gameOverMenu: {fileID: 5741376117049126406, guid: 87dcea207a6056f44b8810e15cc31b88, type: 3}
   inGameMenu: {fileID: 6133801814952644268, guid: 98c7415384ae11141b730dc3d9c8853f, type: 3}
+  creditsMenu: {fileID: 540464201388826790, guid: 9a1f1b5cf2205ba4ab796aad0bb52ccb, type: 3}
+  rankingsMenu: {fileID: 3462098700080312942, guid: ece19461911141b4dbc0c7034c9784bf, type: 3}

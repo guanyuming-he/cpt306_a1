@@ -36,16 +36,14 @@ public abstract class Projectile : MovingObject
     protected sealed override void Awake()
     {
         base.Awake();
-
-        // I assume that dmg is set by RangedAttack.attack()
-        System.Diagnostics.Debug.Assert(dmg > 0);
-
-        // src is instead set by the spawner.
     }
 
     protected sealed override void Start()
     {
         base.Start();
+
+        // I assume that dmg is set by RangedAttack.attack()
+        Game.MyDebugAssert(dmg > 0);
     }
 
     protected sealed override void Update()

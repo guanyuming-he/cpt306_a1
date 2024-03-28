@@ -40,7 +40,7 @@ public abstract class Enemy : MovingObject
         base.Awake();
 
         // attack must have been assigned.
-        System.Diagnostics.Debug.Assert(attack != null);
+        Game.MyDebugAssert(attack != null);
     }
 
     // Start is called before the first frame update

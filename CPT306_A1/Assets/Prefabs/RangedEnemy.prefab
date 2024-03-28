@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8989629756654015930}
   - component: {fileID: 1673702673653490012}
   - component: {fileID: 4226654835865551815}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RangedEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,10 +133,10 @@ CircleCollider2D:
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1024
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1280
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295

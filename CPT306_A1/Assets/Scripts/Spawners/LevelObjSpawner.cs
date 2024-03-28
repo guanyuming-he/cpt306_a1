@@ -16,10 +16,7 @@ public abstract class LevelObjSpawner<T> where T : LevelObject
     /// <exception cref="System.ArgumentNullException"></exception>
     public LevelObjSpawner(in GameObject prefab)
 	{
-		if(prefab == null)
-		{
-			throw new System.ArgumentNullException();
-		}
+        Game.MyDebugAssert(prefab != null, "Cannot spawn null object.");
 
 		this.prefab = prefab;
 	}
@@ -61,19 +58,13 @@ public abstract class LevelObjSpawner<T> where T : LevelObject
 	{
         // if any part of the object may get out of the map
         var half = .5f * LevelObject.size;
-        if(pos.x < Map.mapMinX + half.x || pos.x > Map.mapMaxX - half.x)
-        {
-            throw new System.ArgumentException("pos out of map");
-        }
-        if (pos.y < Map.mapMinY + half.y || pos.y > Map.mapMaxY - half.y)
-        {
-            throw new System.ArgumentException("pos out of map");
-        }
+        Game.MyDebugAssert(!(pos.x < Map.mapMinX + half.x || pos.x > Map.mapMaxX - half.x), "can't spawn out of map.");
+        Game.MyDebugAssert(!(pos.y < Map.mapMinY + half.y || pos.y > Map.mapMaxY - half.y), "can't spawn out of map.");
 
         var gameObj = GameObject.Instantiate(prefab, new UnityEngine.Vector3(pos.x, pos.y, 0.0f), Quaternion.identity);
 		var levelObj = gameObj.GetComponent<T>();
 
-		System.Diagnostics.Debug.Assert(levelObj != null, "I must attach the script to the prefab.");
+		Game.MyDebugAssert(levelObj != null, "I must attach the script to the prefab.");
 		return levelObj;
 	}
 

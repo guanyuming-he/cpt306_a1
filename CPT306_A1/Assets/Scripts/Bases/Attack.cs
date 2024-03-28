@@ -16,10 +16,7 @@ public abstract class Attack
     // Hence I can use some parameters.
     public Attack(LevelObject src, int dmg, float cd)
     {
-        if(src == null)
-        {
-            throw new System.ArgumentNullException();
-        }
+        Game.MyDebugAssert(src != null, "Attack must be owned by someone. Usually it's set by the owning object.");
 
         this.src = src;
         damage = dmg;

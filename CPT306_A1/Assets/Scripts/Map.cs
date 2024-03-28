@@ -66,24 +66,21 @@ public class Map
     /// <exception cref="InvalidOperationException">if hero is already != null</exception>
     public void addHero(Hero h)
     {
-        System.Diagnostics.Debug.Assert(h != null);
+        Game.MyDebugAssert(h != null, "new hero cannot be null");
+        Game.MyDebugAssert(hero == null, "can only add hero when there is not one.");
 
-        if (hero != null)
-        {
-            throw new InvalidOperationException();
-        }
         hero = h;
     }
 
     public void addEnemy(Enemy e)
     {
-        System.Diagnostics.Debug.Assert(e != null);
+        Game.MyDebugAssert(e != null);
         enemies.Add(e);
     }
 
     public void addObstacle(Obstacle o)
     {
-        System.Diagnostics.Debug.Assert(o != null);
+        Game.MyDebugAssert(o != null);
         obstacles.Add(o);
     }
 }

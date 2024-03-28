@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 /// <summary>
@@ -57,7 +59,7 @@ public sealed class Game : MonoBehaviour
     public Game()
     {
         // can only have one instance per game
-        System.Diagnostics.Debug.Assert(gameSingleton == null);
+        Game.MyDebugAssert(gameSingleton == null);
         gameSingleton = this;
 
         // Create the managers that don't need prefabs
@@ -218,12 +220,18 @@ public sealed class Game : MonoBehaviour
     {
         // this time stateMgr can't assert anything
         // because I will not use it.
-        System.Diagnostics.Debug.Assert(stateMgr.getState() == StateManager.State.MAIN_UI);
+        Game.MyDebugAssert(stateMgr.getState() == StateManager.State.MAIN_UI);
 
         // destroy all level objects
         map.clear();
         uiMgr.hideAllUI();
 
+        // destroy all other persistent game objects
+        // including self
+        GameObject.Destroy(uiMgr.gameObject);
+        GameObject.Destroy(this.gameObject);
+
+        // ExitProcess(0);
         Application.Quit(0);
     }
 
@@ -236,10 +244,7 @@ public sealed class Game : MonoBehaviour
     /// <param name="levelNum">number of the level</param>
     private void resetLevel(int levelNum)
     {
-        if (levelNum > numLevels || levelNum <= 0)
-        {
-            throw new ArgumentException("levelNum is incorrect");
-        }
+        Game.MyDebugAssert(!(levelNum > numLevels || levelNum <= 0), "levelNum is incorrect");
 
         // destory all level objects
         map.clear();
@@ -295,11 +300,11 @@ public sealed class Game : MonoBehaviour
         uiMgr = GameObject.Instantiate(uiMgr);
 
         // spawners need prefabs
-        System.Diagnostics.Debug.Assert(obsPrefab != null, "Assign the prefab in the editor");
-        System.Diagnostics.Debug.Assert(desObsPrefab != null, "Assign the prefab in the editor");
-        System.Diagnostics.Debug.Assert(heroPrefab != null, "Assign the prefab in the editor");
-        System.Diagnostics.Debug.Assert(meleeEnemyPrefab != null, "Assign the prefab in the editor");
-        System.Diagnostics.Debug.Assert(rangedEnemyPrefab != null, "Assign the prefab in the editor");
+        Game.MyDebugAssert(obsPrefab != null, "Assign the prefab in the editor");
+        Game.MyDebugAssert(desObsPrefab != null, "Assign the prefab in the editor");
+        Game.MyDebugAssert(heroPrefab != null, "Assign the prefab in the editor");
+        Game.MyDebugAssert(meleeEnemyPrefab != null, "Assign the prefab in the editor");
+        Game.MyDebugAssert(rangedEnemyPrefab != null, "Assign the prefab in the editor");
         heroSpawner = new HeroSpawner(heroPrefab);
         obsSpawner = new ObstacleSpawner(obsPrefab);
         desObsSpawner = new DesObsSpawner(desObsPrefab);
@@ -340,7 +345,7 @@ public sealed class Game : MonoBehaviour
             }
 
             // if the hero is dead
-            System.Diagnostics.Debug.Assert(map.hero != null, "Hero will always be there when running, even when dead.");
+            Game.MyDebugAssert(map.hero != null, "Hero will always be there when running, even when dead.");
             var hittable = map.hero.gameObject.GetComponent<HeroHittableComp>();
             if (hittable.dead())
             {
@@ -351,5 +356,25 @@ public sealed class Game : MonoBehaviour
         }
 
         //throw new NotImplementedException("Check if I have missed anything");
+    }
+
+    /*********************************** Static Helpers ***********************************/
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern void ExitProcess(UInt32 uExitCode);
+
+    /// <summary>
+    /// Don't know who the fucked decided that Unity should catch and ignore all assertions and exceptions.
+    /// I won't allow that to happen.
+    /// </summary>
+    public static void MyDebugAssert(bool condition, String msg = "")
+    {
+        if(!condition)
+        {
+            Debugger.Break();
+            Debugger.Log(0, "Assertion", "Debug Assertion Failed!\n" + msg);
+            //ExitProcess(-1);
+            Application.Quit(-1);
+        }
     }
 }

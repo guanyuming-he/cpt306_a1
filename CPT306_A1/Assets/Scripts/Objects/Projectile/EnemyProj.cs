@@ -4,9 +4,9 @@
     {
         base.OnCollisionEnter2D(collision);
 
-        var other = collision.otherCollider.gameObject;
+        var other = collision.collider.gameObject;
         // enemy can only hit obstacle and the hero
-        if (other.GetComponent<Hero>() != null || other.GetComponent<DesObstacle>() != null)
+        if (other.GetComponent<Hero>() != null || other.GetComponent<Obstacle>() != null)
         {
             var hittable = other.GetComponent<IHittable>();
             // obstacles do not have this
@@ -14,6 +14,7 @@
             {
                 hittable.onHit(dmg, src);
             }
+
             this.destroy();
         }
     }

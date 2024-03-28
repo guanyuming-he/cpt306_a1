@@ -6,7 +6,7 @@ public class EnemyRangedAttack : RangedAttack
     public EnemyRangedAttack(LevelObject src, int dmg, float cd, float projSpeed, ProjSpawner projSpawner) : 
         base(src, dmg, cd, projSpeed, projSpawner) 
     {
-        System.Diagnostics.Debug.Assert(src is RangedEnemy);
+        Game.MyDebugAssert(src is RangedEnemy);
     }
 
     protected override Vector2 calcProjDirection()
