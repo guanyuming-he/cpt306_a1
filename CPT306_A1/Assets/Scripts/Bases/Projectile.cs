@@ -7,7 +7,7 @@ public abstract class Projectile : MovingObject
     public int dmg;
     public LevelObject src;
 
-    public static new readonly UnityEngine.Vector2 size = new UnityEngine.Vector2(.5f, .5f);
+    public static new readonly UnityEngine.Vector2 size = new UnityEngine.Vector2(.3f, .3f);
 
     public Projectile() : base() {}
 

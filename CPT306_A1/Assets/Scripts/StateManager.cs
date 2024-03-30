@@ -18,12 +18,22 @@ public class StateManager
         NEXT_LEVEL
     }
 
+    public enum Difficulty
+    {
+        EASY = 0,
+        NORMAL = 1,
+        HARD = 2,
+        NUMBER_DIFFICULTIES = 3
+    }
+
     /*********************************** Fields ***********************************/
 
     private readonly Timer levelTimer;
     private int level;
     private State state;
     private int score;
+    // Set only in options UI. The state mananger doesn't set it.
+    public Difficulty difficulty;
 
     public static readonly String SCORE_FILE_PATH = "game_scores.txt";
     // score...datetime
@@ -50,6 +60,7 @@ public class StateManager
         level = 1;
         state = State.MAIN_UI;
         score = 0;
+        difficulty = Difficulty.NORMAL;
 
         // enable the timer on creation. loop = false.
         // timer will only update when the state is RUNNING

@@ -170,6 +170,9 @@ public sealed class Game : MonoBehaviour
     {
         // stateMgr asserts the state already.
 
+        // in case it was paused
+        Time.timeScale = 1.0f;
+
         stateMgr.restart();
         uiMgr.hideAllUI();
 
@@ -241,6 +244,9 @@ public sealed class Game : MonoBehaviour
     public void goHome()
     {
         // stateMgr asserts the state already.
+
+        // in case it was paused
+        Time.timeScale = 1.0f;
 
         // destroy all level objects
         map.clear();
@@ -321,6 +327,12 @@ public sealed class Game : MonoBehaviour
 
         // destory all level objects
         map.clear();
+
+        // clear enemy spawn queues
+        meleeSpawnQueue.Clear();
+        rangedSpawnQueue.Clear();
+        numMeleeSpawnTimerFiredThisUpdate = 0;
+        numRangedSpawnTimerFiredThisUpdate = 0;
 
         // recreate level objects with the spawners
         // according to the levelNum

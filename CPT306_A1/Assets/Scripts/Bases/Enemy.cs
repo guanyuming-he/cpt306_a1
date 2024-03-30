@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,12 @@ public abstract class Enemy : MovingObject
     protected EnemyHittableComp hittableComp;
 
     public static new readonly Vector2 size = new Vector2(.8f, .8f);
+
+    // Easy, Normal, Hard
+    public static readonly float[] enemyMoveSpeedPerDifficulty = new float[(int)StateManager.Difficulty.NUMBER_DIFFICULTIES]
+    {
+        0.5f, 1.5f, 2.5f
+    };
 
     public Enemy() : base() {}
 
@@ -47,6 +54,9 @@ public abstract class Enemy : MovingObject
         Game.MyDebugAssert(attack != null);
 
         base.Start();
+
+        // assign speed according to difficulty
+        speed = enemyMoveSpeedPerDifficulty[(int)Game.gameSingleton.stateMgr.difficulty];
     }
 
     // Update is called once per frame

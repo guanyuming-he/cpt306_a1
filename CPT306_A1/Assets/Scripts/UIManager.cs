@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+#if UNITY_EDITOR
 using UnityEditor.Events;
-using UnityEditor.UIElements;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +17,7 @@ public class UIManager : MonoBehaviour
 {
     /*********************************** Fields ***********************************/
     // Assigned in editor
-    // ui prefabs
+    // UI prefabs
     public GameObject mainMenu;
     public GameObject pauseMenu;
     public GameObject nextLevelMenu;
@@ -26,6 +27,9 @@ public class UIManager : MonoBehaviour
     public GameObject creditsMenu;
     public GameObject rankingsMenu;
     public GameObject optionsMenu;
+    // Trash Unity's Dropdown has stupid bugs.
+    // Can't use that. Instead, create a menu myself.
+    public GameObject difficultyMenu;
 
     // other elements that need to be stored (callbacks don't have parameters)
     private Slider[] optionsMenuSliders;
@@ -57,7 +61,7 @@ public class UIManager : MonoBehaviour
 
     public string timeStrProp
     {
-        get => String.Format("Time:{0}", Game.gameSingleton.stateMgr.getLevelTime());
+        get => String.Format("Time:{0}", 30.0f - Game.gameSingleton.stateMgr.getLevelTime());
     }
 
     public string meleeCdStrProp
@@ -117,6 +121,8 @@ public class UIManager : MonoBehaviour
         // states that
         // The component order you apply in the Inspector is
         // the same order that you need to use when you query components in your scripts.
+
+#if UNITY_EDITOR
 
         // main menu buttons
         {
@@ -216,10 +222,169 @@ public class UIManager : MonoBehaviour
             );
 
             var btns = optionsMenu.GetComponentsInChildren<Button>();
-            Game.MyDebugAssert(btns.Length == 1);
+            Game.MyDebugAssert(btns.Length == 2);
+            // difficulty change button
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, () => difficultyMenu.SetActive(true));
             // go back button
-            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, () => optionsMenu.SetActive(false));
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, () => optionsMenu.SetActive(false));
         }
+
+        // difficulty menu buttons.
+        {
+            var btns = difficultyMenu.GetComponentsInChildren<Button>();
+            Game.MyDebugAssert(btns.Length == 3);
+            // easy
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, () =>
+            {
+                Game.gameSingleton.stateMgr.difficulty = StateManager.Difficulty.EASY;
+                difficultyMenu.SetActive(false);
+                updateOptionsMenu();
+            });
+            // normal
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, () =>
+            {
+                Game.gameSingleton.stateMgr.difficulty = StateManager.Difficulty.NORMAL;
+                difficultyMenu.SetActive(false);
+                updateOptionsMenu();
+            });
+            // hard
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, () =>
+            {
+                Game.gameSingleton.stateMgr.difficulty = StateManager.Difficulty.HARD;
+                difficultyMenu.SetActive(false);
+                updateOptionsMenu();
+            });
+        }
+#else
+        // main menu buttons
+        {
+            var btns = mainMenu.GetComponentsInChildren<Button>();
+
+            Game.MyDebugAssert(btns.Length == 5);
+
+            // start btn
+            btns[0].onClick.AddListener(onStartGameClicked);
+            //btns[0].onClick.AddListener(onStartGameClicked);
+            // ranking btn
+            btns[1].onClick.AddListener(onRankingClicked);
+            // credits btn
+            btns[2].onClick.AddListener(onCreditsClicked);
+            // options btn
+            btns[3].onClick.AddListener(onOptionsClicked);
+            // exit btn
+            btns[4].onClick.AddListener(onExitGameClicked);
+        }
+
+        // pause menu buttons
+        {
+            var btns = pauseMenu.GetComponentsInChildren<Button>();
+            // resume btn
+            btns[0].onClick.AddListener(onResumeGameClicked);
+            // restart btn
+            btns[1].onClick.AddListener(onRestartGameClicked);
+            // home btn
+            btns[2].onClick.AddListener(onHomeClicked);
+        }
+
+        // next level buttons
+        {
+            var btns = nextLevelMenu.GetComponentsInChildren<Button>();
+            // next level btn
+            btns[0].onClick.AddListener(onNextLevelClicked);
+            // restart btn
+            btns[1].onClick.AddListener(onRestartGameClicked);
+            // home btn
+            btns[2].onClick.AddListener(onHomeClicked);
+        }
+
+        // victory buttons
+        {
+            var btns = victoryMenu.GetComponentsInChildren<Button>();
+            // restart btn
+            btns[0].onClick.AddListener(onRestartGameClicked);
+            // home btn
+            btns[1].onClick.AddListener(onHomeClicked);
+        }
+
+        // gameover buttons
+        {
+            var btns = gameOverMenu.GetComponentsInChildren<Button>();
+            // restart btn
+            btns[0].onClick.AddListener(onRestartGameClicked);
+            // home btn
+            btns[1].onClick.AddListener(onHomeClicked);
+        }
+
+        // rankings menu buttons
+        {
+            var btns = rankingsMenu.GetComponentsInChildren<Button>();
+            // go back btn
+            btns[0].onClick.AddListener(() => rankingsMenu.SetActive(false));
+        }
+
+        // credits menu buttons
+        {
+            var btns = creditsMenu.GetComponentsInChildren<Button>();
+            // go back btn
+            btns[0].onClick.AddListener(() => creditsMenu.SetActive(false));
+        }
+
+        // options menu sliders and button
+        {
+            optionsMenuSliders = optionsMenu.GetComponentsInChildren<Slider>();
+            Game.MyDebugAssert(optionsMenuSliders.Length == 3);
+
+            // master volume slider
+            optionsMenuSliders[0].onValueChanged.AddListener
+            (
+                (value) => AudioManager.masterVolume = value
+            );
+            // music volume slider
+            optionsMenuSliders[1].onValueChanged.AddListener
+            (
+                (value) => AudioManager.musicVolume = value
+            );
+            // effects volume slider
+            optionsMenuSliders[2].onValueChanged.AddListener
+            (
+                (value) => AudioManager.effectsVolume = value
+            );
+
+            var btns = optionsMenu.GetComponentsInChildren<Button>();
+            Game.MyDebugAssert(btns.Length == 2);
+            // difficulty change button
+            btns[0].onClick.AddListener(() => difficultyMenu.SetActive(true));
+            // go back button
+            btns[1].onClick.AddListener(() => optionsMenu.SetActive(false));
+        }
+
+        // difficulty menu buttons.
+        {
+            var btns = difficultyMenu.GetComponentsInChildren<Button>();
+            Game.MyDebugAssert(btns.Length == 3);
+            // easy
+            btns[0].onClick.AddListener(() =>
+            {
+                Game.gameSingleton.stateMgr.difficulty = StateManager.Difficulty.EASY;
+                difficultyMenu.SetActive(false);
+                updateOptionsMenu();
+            });
+            // normal
+            btns[1].onClick.AddListener(() =>
+            {
+                Game.gameSingleton.stateMgr.difficulty = StateManager.Difficulty.NORMAL;
+                difficultyMenu.SetActive(false);
+                updateOptionsMenu();
+            });
+            // hard
+            btns[2].onClick.AddListener(() =>
+            {
+                Game.gameSingleton.stateMgr.difficulty = StateManager.Difficulty.HARD;
+                difficultyMenu.SetActive(false);
+                updateOptionsMenu();
+            });
+        }
+#endif
     }
 
     public void showMainMenu()
@@ -253,6 +418,8 @@ public class UIManager : MonoBehaviour
     public void showOptionsMenu()
     {
         optionsMenu.SetActive(true);
+
+        updateOptionsMenu();
     }
     public void showRankingsMenu()
     {
@@ -282,8 +449,8 @@ public class UIManager : MonoBehaviour
                     textEntry.text =
                     String.Format
                     (
-                        "{0} at {1}",
-                        scoresLine.Key, scoresLine.Value
+                        "{0}: {1} at {2}",
+                        i+1, scoresLine.Key, scoresLine.Value
                     );
                 }
                 // does not have a score for this one
@@ -309,6 +476,7 @@ public class UIManager : MonoBehaviour
         creditsMenu.SetActive(false);
         rankingsMenu.SetActive(false);
         optionsMenu.SetActive(false);
+        difficultyMenu.SetActive(false);
         // inGameMenu.SetActive(false);
     }
 
@@ -316,6 +484,20 @@ public class UIManager : MonoBehaviour
     {
         hideAllExceptInGameUI();
         inGameMenu.SetActive(false);
+    }
+
+    public void OnDestroy()
+    {
+        GameObject.Destroy(mainMenu.gameObject);
+        GameObject.Destroy(pauseMenu.gameObject);
+        GameObject.Destroy(nextLevelMenu.gameObject);
+        GameObject.Destroy(victoryMenu.gameObject);
+        GameObject.Destroy(gameOverMenu.gameObject);
+        GameObject.Destroy(creditsMenu.gameObject);
+        GameObject.Destroy(rankingsMenu.gameObject);
+        GameObject.Destroy(optionsMenu.gameObject);
+        GameObject.Destroy(difficultyMenu.gameObject);
+        GameObject.Destroy(inGameMenu.gameObject);
     }
 
     /*********************************** Mono ***********************************/
@@ -337,6 +519,7 @@ public class UIManager : MonoBehaviour
         this.creditsMenu = GameObject.Instantiate(creditsMenu);
         this.rankingsMenu = GameObject.Instantiate(rankingsMenu);
         this.optionsMenu = GameObject.Instantiate(optionsMenu);
+        this.difficultyMenu = GameObject.Instantiate(difficultyMenu);
 
         Game.MyDebugAssert(inGameMenu != null);
         Game.MyDebugAssert(mainMenu != null);
@@ -347,6 +530,7 @@ public class UIManager : MonoBehaviour
         Game.MyDebugAssert(creditsMenu != null);
         Game.MyDebugAssert(rankingsMenu != null);
         Game.MyDebugAssert(optionsMenu != null);
+        Game.MyDebugAssert(difficultyMenu != null);
 
         // don't forget also to bind the listeners after spawning.
         bindMenuCallbacks();
@@ -425,6 +609,16 @@ public class UIManager : MonoBehaviour
         }
 
         return ret;
+    }
+
+    private void updateOptionsMenu()
+    {
+        // Set difficulty text
+        var btns = optionsMenu.GetComponentsInChildren<Button>();
+        btns[0].GetComponentInChildren<TMP_Text>().text =
+            "Current Difficulty: " +
+            Game.gameSingleton.stateMgr.difficulty.ToString() +
+            "\nClick to CHANGE";
     }
 
     /*********************************** UI Callbacks ***********************************/

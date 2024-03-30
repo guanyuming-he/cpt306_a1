@@ -13,8 +13,6 @@ public class MeleeEnemy : Enemy
     /*********************************** Ctor ***********************************/
     public MeleeEnemy() : base() 
     {
-        // NOTE: unspecified
-        speed = 0.5f;
     }
 
     /*********************************** Mono ***********************************/
@@ -44,7 +42,7 @@ public class MeleeEnemy : Enemy
             return;
         }
 
-        // Game logic:
+        // Game logic: spawn another (after some time) when dead
         {
             var hittable = gameObject.GetComponent<IHittable>();
             if (hittable.dead())
@@ -60,12 +58,31 @@ public class MeleeEnemy : Enemy
         this.direction = vectorDiff.normalized;
         base.Update();
 
-        // if it gets close enough to the hero, then attack.
-        // by close enough, I want the attack range can cover at least 1.0f more than the hero.
-        if (vectorDiff.magnitude <= meleeAttackRange.magnitude - 1.0f)
+        // difficulty logic:
+        // easy: attack whenever possible
+        // normal and hard: attack only when close
         {
-            attack.tryAttack(getPos());
+            bool attackOrNot = true;
+            switch (Game.gameSingleton.stateMgr.difficulty)
+            {
+            case StateManager.Difficulty.EASY:
+                attackOrNot = true;
+                break;
+            case StateManager.Difficulty.NORMAL:
+            case StateManager.Difficulty.HARD:
+                // if it gets close enough to the hero, then attack.
+                // by close enough, I want the attack range can cover at least 1.0f more than the hero.
+                attackOrNot = vectorDiff.magnitude <= meleeAttackRange.magnitude - 1.0f;
+                break;
+
+            }
+        
+            if (attackOrNot)
+            {
+                attack.tryAttack(getPos());
+            }
         }
+
     }
 }
 

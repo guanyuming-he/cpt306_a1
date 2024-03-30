@@ -53,3 +53,4 @@ MonoBehaviour:
   creditsMenu: {fileID: 540464201388826790, guid: 9a1f1b5cf2205ba4ab796aad0bb52ccb, type: 3}
   rankingsMenu: {fileID: 3462098700080312942, guid: ece19461911141b4dbc0c7034c9784bf, type: 3}
   optionsMenu: {fileID: 5310361889938612048, guid: cfa2729706ffdec41b5b1fde18477463, type: 3}
+  difficultyMenu: {fileID: 7781467586194739268, guid: 89d81afcfae024345b3c8cd4e27b5d5b, type: 3}

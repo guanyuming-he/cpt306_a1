@@ -15,8 +15,6 @@ public sealed class RangedEnemy : Enemy
 
     public RangedEnemy() : base() 
     {
-        // NOTE: unspecified
-        speed = 0.5f;
     }
 
     protected override void Awake()
