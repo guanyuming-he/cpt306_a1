@@ -10,12 +10,18 @@ public class Hero : MovingObject
     // Created in Awake where prefabs are available
     private MeleeAttack meleeAttack;
     private RangedAttack rangedAttack;
+    // Assigned in the editor
+    private AudioSource meleeAudioEffect;
+    private AudioSource rangedAudioEffect;
 
     // Assigned in the editor, instantiated in Awake()
     // location updated to mouse in Update().
     public GameObject shootingCrossbar;
 
-    // assigned in the editor
+    // Assigned in the editor
+    public GameObject meleeVisualEffectPrefab;
+
+    // Assigned in the editor
     public GameObject bulletPrefab;
     // created in Awake()
     private static ProjSpawner bulletSpawner = null;
@@ -87,9 +93,17 @@ public class Hero : MovingObject
         // specified
         hittableComp.initHealth(30);
 
-        // Create the attacks
-        meleeAttack = new HeroMeleeAttack(this, 2, 2.0f, meleeAttackRange);
-        rangedAttack = new HeroRangedAttack(this, 1, 0.5f, 2.0f, bulletSpawner);
+        // Create the attacks and their effects
+        // audio effects
+        var audioEffects = gameObject.GetComponents<AudioSource>();
+        Game.MyDebugAssert(audioEffects.Length == 2);
+        meleeAudioEffect = audioEffects[0];
+        rangedAudioEffect = audioEffects[1];
+        // visual effects
+        Game.MyDebugAssert(meleeVisualEffectPrefab != null);
+        // attacks
+        meleeAttack = new HeroMeleeAttack(this, 2, 2.0f, meleeAttackRange, meleeVisualEffectPrefab, meleeAudioEffect);
+        rangedAttack = new HeroRangedAttack(this, 1, 0.5f, 2.0f, bulletSpawner, rangedAudioEffect);
     }
 
     // Update is called once per frame

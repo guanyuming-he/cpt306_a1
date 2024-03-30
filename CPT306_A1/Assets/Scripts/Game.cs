@@ -145,7 +145,8 @@ public sealed class Game : MonoBehaviour
     public void pauseGame()
     {
         // stateMgr asserts the state already.
-        
+
+        Time.timeScale = 0.0f;
         stateMgr.pause();
         uiMgr.showPauseMenu();
     }
@@ -157,6 +158,7 @@ public sealed class Game : MonoBehaviour
     {
         // stateMgr asserts the state already.
 
+        Time.timeScale = 1.0f;
         stateMgr.resume();
         uiMgr.hideAllExceptInGameUI();
     }
@@ -269,8 +271,8 @@ public sealed class Game : MonoBehaviour
         GameObject.Destroy(uiMgr.gameObject);
         GameObject.Destroy(this.gameObject);
 
-        ExitProcess(0);
-        //Application.Quit(0);
+        //ExitProcess(0);
+        Application.Quit(0);
     }
 
     /// <summary>

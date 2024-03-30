@@ -25,6 +25,10 @@ public class UIManager : MonoBehaviour
     public GameObject inGameMenu;
     public GameObject creditsMenu;
     public GameObject rankingsMenu;
+    public GameObject optionsMenu;
+
+    // other elements that need to be stored (callbacks don't have parameters)
+    private Slider[] optionsMenuSliders;
 
     /*********************************** UI data binding ***********************************/
 
@@ -105,8 +109,9 @@ public class UIManager : MonoBehaviour
     /*********************************** Methods ***********************************/
     /// <summary>
     /// Helper called inside the ctor
+    /// to bind all callbacks to the menus
     /// </summary>
-    private void bindButtonListeners()
+    private void bindMenuCallbacks()
     {
         // https://docs.unity3d.com/Manual/InspectorOptions.html#reordering-components
         // states that
@@ -116,55 +121,60 @@ public class UIManager : MonoBehaviour
         // main menu buttons
         {
             var btns = mainMenu.GetComponentsInChildren<Button>();
+
+            Game.MyDebugAssert(btns.Length == 5);
+
             // start btn
             UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onStartGameClicked);
             //btns[0].onClick.AddListener(onStartGameClicked);
             // ranking btn
             UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRankingClicked);
             // credits btn
-            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onCreditsClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onCreditsClicked);
+            // options btn
+            UnityEventTools.AddVoidPersistentListener(btns[3].onClick, onOptionsClicked);
             // exit btn
-            UnityEventTools.AddVoidPersistentListener(btns[3].onClick, onExitGameClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[4].onClick, onExitGameClicked);
         }
 
         // pause menu buttons
         {
             var btns = pauseMenu.GetComponentsInChildren<Button>();
             // resume btn
-            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onResumeGameClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onResumeGameClicked);
             // restart btn
-            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRestartGameClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRestartGameClicked);
             // home btn
-            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onHomeClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onHomeClicked);
         }
 
         // next level buttons
         {
             var btns = nextLevelMenu.GetComponentsInChildren<Button>();
             // next level btn
-            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onNextLevelClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onNextLevelClicked);
             // restart btn
-            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRestartGameClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onRestartGameClicked);
             // home btn
-            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onHomeClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[2].onClick, onHomeClicked);
         }
 
         // victory buttons
         {
             var btns = victoryMenu.GetComponentsInChildren<Button>();
             // restart btn
-            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onRestartGameClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onRestartGameClicked);
             // home btn
-            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onHomeClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onHomeClicked);
         }
 
         // gameover buttons
         {
             var btns = gameOverMenu.GetComponentsInChildren<Button>();
             // restart btn
-            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onRestartGameClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, onRestartGameClicked);
             // home btn
-            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onHomeClicked);;
+            UnityEventTools.AddVoidPersistentListener(btns[1].onClick, onHomeClicked);
         }
 
         // rankings menu buttons
@@ -181,7 +191,35 @@ public class UIManager : MonoBehaviour
             UnityEventTools.AddVoidPersistentListener(btns[0].onClick, () => creditsMenu.SetActive(false));
         }
 
-        //throw new System.NotImplementedException("TODO: credits menu");
+        // options menu sliders and button
+        {
+            optionsMenuSliders = optionsMenu.GetComponentsInChildren<Slider>();
+            Game.MyDebugAssert(optionsMenuSliders.Length == 3);
+
+            // master volume slider
+            UnityEventTools.AddVoidPersistentListener
+            (
+                optionsMenuSliders[0].onValueChanged,
+                () => AudioManager.masterVolume = optionsMenuSliders[0].value
+            );
+            // music volume slider
+            UnityEventTools.AddVoidPersistentListener
+            (
+                optionsMenuSliders[1].onValueChanged,
+                () => AudioManager.musicVolume = optionsMenuSliders[1].value
+            );
+            // effects volume slider
+            UnityEventTools.AddVoidPersistentListener
+            (
+                optionsMenuSliders[2].onValueChanged,
+                () => AudioManager.effectsVolume = optionsMenuSliders[2].value
+            );
+
+            var btns = optionsMenu.GetComponentsInChildren<Button>();
+            Game.MyDebugAssert(btns.Length == 1);
+            // go back button
+            UnityEventTools.AddVoidPersistentListener(btns[0].onClick, () => optionsMenu.SetActive(false));
+        }
     }
 
     public void showMainMenu()
@@ -211,6 +249,10 @@ public class UIManager : MonoBehaviour
     public void showCreditsMenu()
     {
         creditsMenu.SetActive(true);
+    }
+    public void showOptionsMenu()
+    {
+        optionsMenu.SetActive(true);
     }
     public void showRankingsMenu()
     {
@@ -266,6 +308,7 @@ public class UIManager : MonoBehaviour
         gameOverMenu.SetActive(false);
         creditsMenu.SetActive(false);
         rankingsMenu.SetActive(false);
+        optionsMenu.SetActive(false);
         // inGameMenu.SetActive(false);
     }
 
@@ -293,6 +336,7 @@ public class UIManager : MonoBehaviour
         this.gameOverMenu = GameObject.Instantiate(gameOverMenu);
         this.creditsMenu = GameObject.Instantiate(creditsMenu);
         this.rankingsMenu = GameObject.Instantiate(rankingsMenu);
+        this.optionsMenu = GameObject.Instantiate(optionsMenu);
 
         Game.MyDebugAssert(inGameMenu != null);
         Game.MyDebugAssert(mainMenu != null);
@@ -302,9 +346,10 @@ public class UIManager : MonoBehaviour
         Game.MyDebugAssert(gameOverMenu != null);
         Game.MyDebugAssert(creditsMenu != null);
         Game.MyDebugAssert(rankingsMenu != null);
+        Game.MyDebugAssert(optionsMenu != null);
 
         // don't forget also to bind the listeners after spawning.
-        bindButtonListeners();
+        bindMenuCallbacks();
 
         // hide all, and the in game menu
         // when I want to show one, call the corresponding method.
@@ -382,7 +427,7 @@ public class UIManager : MonoBehaviour
         return ret;
     }
 
-    /*********************************** OnClickHandlers ***********************************/
+    /*********************************** UI Callbacks ***********************************/
     public void onStartGameClicked()
     {
         Game.gameSingleton.startGame();
@@ -394,6 +439,10 @@ public class UIManager : MonoBehaviour
     public void onCreditsClicked()
     {
         showCreditsMenu();
+    }
+    public void onOptionsClicked()
+    {
+        showOptionsMenu();
     }
     public void onExitGameClicked()
     {

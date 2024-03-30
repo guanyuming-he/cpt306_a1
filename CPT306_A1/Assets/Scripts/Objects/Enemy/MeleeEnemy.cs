@@ -6,20 +6,25 @@ public class MeleeEnemy : Enemy
     /*********************************** Settings ***********************************/
     public static readonly Vector2 meleeAttackRange = new Vector2(3.0f, 3.0f);
 
+    /*********************************** Fields ***********************************/
+    // Assigned in editor
+    public GameObject meleeVisualEffectPrefab;
+
     /*********************************** Ctor ***********************************/
     public MeleeEnemy() : base() 
     {
         // NOTE: unspecified
         speed = 0.5f;
-
-        // create the attack
-        attack = new EnemyMeleeAttack(this, 1, 1.0f, meleeAttackRange);
     }
 
     /*********************************** Mono ***********************************/
     protected override void Awake()
     {
         base.Awake();
+
+        // create the attack
+        Game.MyDebugAssert(meleeVisualEffectPrefab != null);
+        attack = new EnemyMeleeAttack(this, 1, 1.0f, meleeAttackRange, meleeVisualEffectPrefab);
 
         // create the hittable component
         hittableComp = gameObject.AddComponent<EnemyHittableComp>();

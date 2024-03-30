@@ -2,8 +2,10 @@
 
 public sealed class EnemyMeleeAttack : MeleeAttack
 {
-    public EnemyMeleeAttack(LevelObject src, int dmg, float cd, Vector2 attackRange)
-        : base(src, dmg, cd, attackRange) { }
+    public EnemyMeleeAttack(LevelObject src, int dmg, float cd, Vector2 attackRange, GameObject visualEffect)
+        : base(src, dmg, cd, attackRange, visualEffect) 
+    {
+    }
 
     protected override bool canHit(GameObject obj)
     {

@@ -1,16 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class HeroRangedAttack : RangedAttack
 {
-    public HeroRangedAttack(LevelObject src, int dmg, float cd, float projSpeed, ProjSpawner projSpawner) 
+    private readonly AudioSource audioEffect;
+
+    public HeroRangedAttack
+    (
+        LevelObject src, 
+        int dmg, float cd, float projSpeed, 
+        ProjSpawner projSpawner,
+        AudioSource audioEffect
+    ) 
         : base(src, dmg, cd, projSpeed, projSpawner)
     {
         Game.MyDebugAssert(src is Hero);
+        this.audioEffect = audioEffect;
+    }
+
+    protected override void attack(Vector2 pos)
+    {
+        audioEffect.volume = AudioManager.effectsStrength();
+        audioEffect.Play();
+
+        base.attack(pos);
     }
 
     protected override Vector2 calcProjDirection()

@@ -101,6 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1.5
   direction: {x: 0, y: 1}
+  meleeVisualEffectPrefab: {fileID: 8443315704496310910, guid: 6ef35fa36e3a65043b2d800600204bdd, type: 3}
 --- !u!50 &2933600668474917923
 Rigidbody2D:
   serializedVersion: 4

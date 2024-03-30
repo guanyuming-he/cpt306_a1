@@ -38,14 +38,14 @@ public abstract class Enemy : MovingObject
     protected override void Awake()
     {
         base.Awake();
-
-        // attack must have been assigned.
-        Game.MyDebugAssert(attack != null);
     }
 
     // Start is called before the first frame update
     protected override void Start()
     {
+        // attack must have been assigned.
+        Game.MyDebugAssert(attack != null);
+
         base.Start();
     }
 
