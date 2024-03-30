@@ -71,8 +71,8 @@ public class MeleeEnemy : Enemy
             case StateManager.Difficulty.NORMAL:
             case StateManager.Difficulty.HARD:
                 // if it gets close enough to the hero, then attack.
-                // by close enough, I want the attack range can cover at least 1.0f more than the hero.
-                attackOrNot = vectorDiff.magnitude <= meleeAttackRange.magnitude - 1.0f;
+                // by close enough, I want the attack range can cover at least .5f more than the hero.
+                attackOrNot = vectorDiff.magnitude <= .5f * meleeAttackRange.magnitude - .5f;
                 break;
 
             }
