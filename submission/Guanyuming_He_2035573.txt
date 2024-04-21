@@ -1,0 +1,24 @@
+# Unity Version
+2022.3.20f1 LTS
+
+# Enemies Behavioral Strategies
+1. The game has completed basic strategies like in the specification and video.
+2. Higher score: this game has a difficulty adjustment function:
+    EASY: enemies attack whenever not in cooldown. Move slowly.
+    NORMAL: melee enemies only attack when the attack can hit the player. Ranged the same as easy. Move moderately fast.
+    HARD: melee enemies only attack when the attack can hit the player. Ranged the same as normal. Move as fast as the player.
+
+# AI Tools:
+NO, I have not used any AI tool at all.
+
+# Other high mark implementations:
+1. Background music
+2. Player melee & ranged attack audio (I do not add sound for enemies because that would be too noisy)
+3. Options menu where
+    i. Adjust master volume
+    ii. Adjust music volume
+    iii. Adjust effects volume
+    iv. Adjust difficulty
+4. Game elements and user interface are clear and easy to distinguish.
+5. The user interface is designed in a uniform style, 
+and each menu has a slightly different BLUE background color to let the user distinguish them more easily.
